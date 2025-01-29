@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="635.0" prefWidth="937.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.marciliojr.comprazfx.MainApplication">
+    <tabs>
+        <Tab text="Cadastrar Notas">
+            <content>
+                <AnchorPane prefHeight="348.0" prefWidth="937.0">
+                    <children>
+                        <Label layoutX="21.0" layoutY="51.0" text="Nome Estabelecimento:" />
+                        <TextField fx:id="nomeEstabelecimentoTextField" layoutX="158.0" layoutY="47.0" prefHeight="25.0" prefWidth="386.0">
+                     <tooltip>
+                        <Tooltip text="Nome do Estabelecimento da compra" />
+                     </tooltip></TextField>
+                        <Button fx:id="carregarPdfButton" layoutX="21.0" layoutY="161.0" mnemonicParsing="false" onAction="#carregarPdf" prefHeight="25.0" prefWidth="134.0" text="Carregar PDF Nota" />
+                        <TextField fx:id="fileNameTextField" layoutX="159.0" layoutY="161.0" prefHeight="25.0" prefWidth="388.0" />
+                        <Button layoutX="21.0" layoutY="291.0" mnemonicParsing="false" onAction="#cadastrar" text="Cadastrar" />
+                  <Button layoutX="106.0" layoutY="291.0" mnemonicParsing="false" onAction="#teste" text="Testar Conexão" />
+                  <DatePicker fx:id="dataCadastro" layoutX="158.0" layoutY="90.0">
+                     <tooltip>
+                        <Tooltip text="Data que a compra foi feita" />
+                     </tooltip></DatePicker>
+                  <Label layoutX="21.0" layoutY="94.0" text="Data Compra:" />
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab text="Listar Notas">
+            <content>
+                <AnchorPane prefHeight="534.0" prefWidth="736.0">
+                    <children>
+                        <TableView fx:id="tabelaItens" layoutX="33.0" layoutY="98.0" prefHeight="402.0" prefWidth="864.0">
+                            <columns>
+                                <TableColumn fx:id="colunaNome" text="Nome" />
+                                <TableColumn fx:id="colunaQuantidade" text="Quantidade" />
+                                <TableColumn fx:id="colunaUnidade" text="Unidade" />
+                                <TableColumn fx:id="colunaValor" text="Valor Unitário" />
+                                <TableColumn fx:id="colunaValorTotal" text="Valor Total" />
+                                <TableColumn fx:id="colunaEstabelecimento" text="Estabelecimento" />
+                                <TableColumn fx:id="colunaDataCompra" text="Data de compra" />
+                            </columns>
+                        </TableView>
+                  <Label layoutX="33.0" layoutY="511.0" style="-fx-font-weight: bold;" text="Total: " />
+                  <TextField fx:id="nomeEstabelecimentoTextFieldPesquisa" layoutX="137.0" layoutY="23.0" prefHeight="25.0" prefWidth="366.0" />
+                  <Label layoutX="39.0" layoutY="67.0" text="Data Inicio:" />
+                  <DatePicker fx:id="dataInicio" layoutX="137.0" layoutY="63.0">
+                     <tooltip>
+                        <Tooltip text="Data inicio do filtro" />
+                     </tooltip></DatePicker>
+                  <Label layoutX="329.0" layoutY="67.0" text="Data Fim:" />
+                  <DatePicker fx:id="dataFim" layoutX="401.0" layoutY="63.0" />
+                  <Button layoutX="603.0" layoutY="63.0" mnemonicParsing="false" onAction="#pesquisar" text="Pesquisar" />
+                  <Label fx:id="somatorioValorItem" layoutX="71.0" layoutY="511.0" style="-fx-font-weight: bold;" text="valor" textFill="#f50000" />
+                  <Label layoutX="39.0" layoutY="27.0" text="Estabelecimento:" />
+                  <Button layoutX="684.0" onAction="#gerarPDF"  layoutY="63.0" mnemonicParsing="false" text="Gerar PDF" />
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>

@@ -1,12 +1,7 @@
 package com.marciliojr.comprazfx;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.marciliojr.comprazfx.infra.LocalDateAdapter;
-import com.marciliojr.comprazfx.infra.MultipartFileUploader;
-import com.marciliojr.comprazfx.model.ItemDTO;
+import com.marciliojr.comprazfx.infra.PersistenciaPDF;
+import com.marciliojr.comprazfx.model.dto.ItemDTO;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -23,13 +18,10 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -45,57 +37,41 @@ import java.util.regex.Pattern;
 
 public class MainApplication extends Application {
 
+    private static final String APP_TITLE = "Compraz - Gestor compras por nota fiscal";
+    private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
     @FXML
     private Button carregarPdfButton;
-
     @FXML
     private TextField fileNameTextField;
-
     @FXML
     private TextField nomeEstabelecimentoTextField;
-
     @FXML
     private TextField nomeEstabelecimentoTextFieldPesquisa;
-
     @FXML
     private TableView<ItemDTO> tabelaItens;
-
     @FXML
     private TableColumn<ItemDTO, String> colunaNome;
-
     @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaQuantidade;
-
     @FXML
     private TableColumn<ItemDTO, String> colunaUnidade;
-
     @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaValor;
-
     @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaValorTotal;
     @FXML
     private TableColumn<ItemDTO, String> colunaEstabelecimento;
     @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaDataCompra;
-
     @FXML
     private DatePicker dataInicio;
-
     @FXML
     private DatePicker dataFim;
-
     @FXML
     private DatePicker dataCadastro;
-
     @FXML
     private Label somatorioValorItem;
-
-    private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
-
     private File file;
-
-    private static final String APP_TITLE = "Compraz - Gestor compras por nota fiscal";
 
     @FXML
     private void pesquisar(ActionEvent event) {
@@ -119,7 +95,7 @@ public class MainApplication extends Application {
                 splashStage.close();
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
-                    Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+                    Scene scene = new Scene(fxmlLoader.load(), 900, 700);
                     stage.setTitle(APP_TITLE);
                     stage.setScene(scene);
                     stage.show();
@@ -145,20 +121,7 @@ public class MainApplication extends Application {
     }
 
     private void carregarItens() {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(gerarUrlDosItens(nomeEstabelecimentoTextFieldPesquisa.getText(), dataInicio.getValue(), dataFim.getValue())))
-                .GET()
-                .build();
 
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(this::atualizarTabela)
-                .exceptionally(ex -> {
-                    Platform.runLater(() ->
-                            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Conexão", "Falha ao carregar os itens: " + ex.getMessage()));
-                    return null;
-                });
     }
 
 
@@ -211,39 +174,26 @@ public class MainApplication extends Application {
 
 
     private String gerarUrlDosItens(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
-        return UriComponentsBuilder.fromHttpUrl("http://localhost:8080/api/item/itens")
-                .queryParam("nomeEstabelecimento", nomeEstabelecimento)
-                .queryParamIfPresent("dataInicio", java.util.Optional.ofNullable(dataInicio))
-                .queryParamIfPresent("dataFim", java.util.Optional.ofNullable(dataFim))
-                .toUriString();
+        return null;
     }
 
     private String gerarUrlSomatorioDias(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
-        return UriComponentsBuilder.fromHttpUrl("http://localhost:8080/api/item/soma-valor-unitario")
-                .queryParam("nomeEstabelecimento", nomeEstabelecimento)
-                .queryParamIfPresent("dataInicio", java.util.Optional.ofNullable(dataInicio))
-                .queryParamIfPresent("dataFim", java.util.Optional.ofNullable(dataFim))
-                .toUriString();
+        return null;
     }
 
     private void atualizarTabela(String responseBody) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                .create();
         try {
-            Type itemListType = new TypeToken<List<ItemDTO>>() {}.getType();
-            List<ItemDTO> itens = gson.fromJson(responseBody, itemListType);
+            List<ItemDTO> itens = null;
 
             Platform.runLater(() -> {
                 listaItens.clear();
                 listaItens.addAll(itens);
             });
 
-        } catch (JsonSyntaxException e) {
-            System.err.println("Erro ao processar JSON: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("Ao Listar " + e.getMessage());
         }
     }
-
 
 
     private Stage createSplashScreen() {
@@ -261,9 +211,6 @@ public class MainApplication extends Application {
         return splashStage;
     }
 
-    public static void main(String[] args) {
-        launch();
-    }
 
     @FXML
     private void carregarPdf(ActionEvent event) {
@@ -282,7 +229,7 @@ public class MainApplication extends Application {
         }
 
         try {
-            MultipartFileUploader.enviarArquivo(file, nomeEstabelecimentoTextField.getText().trim(), dataCadastro.getValue());
+            PersistenciaPDF.enviarArquivo(file, nomeEstabelecimentoTextField.getText().trim(), dataCadastro.getValue());
             mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Arquivo cadastrado com sucesso!");
             limparCampos();
         } catch (Exception e) {
@@ -295,7 +242,6 @@ public class MainApplication extends Application {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Teste de Conexão");
         alert.setHeaderText(null);
-        alert.setContentText(MultipartFileUploader.teste());
         alert.showAndWait();
     }
 
@@ -340,37 +286,30 @@ public class MainApplication extends Application {
     }
 
     private String gerarUrlPDF(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
-        return UriComponentsBuilder.fromHttpUrl("http://localhost:8080/api/item/exportar/pdf")
-                .queryParam("nomeEstabelecimento", nomeEstabelecimento)
-                .queryParamIfPresent("dataInicio", java.util.Optional.ofNullable(dataInicio))
-                .queryParamIfPresent("dataFim", java.util.Optional.ofNullable(dataFim))
-                .toUriString();
+        return null;
     }
 
     @FXML
     public void gerarPDF(ActionEvent event) {
-        String url = gerarUrlPDF(nomeEstabelecimentoTextFieldPesquisa.getText(), dataInicio.getValue(), dataFim.getValue());
-
-        RestTemplate restTemplate = new RestTemplate();
-        byte[] pdfBytes = restTemplate.getForObject(url, byte[].class);
+        byte[] pdfBytes = null;
 
         if (pdfBytes == null || pdfBytes.length == 0) {
             mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
             return;
         }
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-            fileChooser.setInitialFileName("relatorio_compras_"+ LocalDate.now().format(DateTimeFormatter.ISO_DATE) +".pdf");
-            File file = fileChooser.showSaveDialog(new Stage());
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+        fileChooser.setInitialFileName("relatorio_compras_" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ".pdf");
+        File file = fileChooser.showSaveDialog(new Stage());
 
-            if (file != null) {
-                try (FileOutputStream fos = new FileOutputStream(file)) {
-                    fos.write(pdfBytes);
-                    mostrarMensagem("Sucesso!", "PDF gerado e salvo com sucesso.");
-                } catch (IOException e) {
-                    mostrarMensagem("Erro!", "Não foi possível salvar o PDF.");
-                }
+        if (file != null) {
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(pdfBytes);
+                mostrarMensagem("Sucesso!", "PDF gerado e salvo com sucesso.");
+            } catch (IOException e) {
+                mostrarMensagem("Erro!", "Não foi possível salvar o PDF.");
             }
+        }
     }
 
     private void mostrarMensagem(String titulo, String mensagem) {

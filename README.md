@@ -1,69 +1,90 @@
-# 🛒 ComprazFx
+# 📦 ComprazFX - Gestor de Compras por Cupom Fiscal
 
-> Interface gráfica para chamada aos endpoints do **Compraz**.
+Bem-vindo ao **ComprazFX**, uma aplicação desktop e offline para gestão de compras a partir de cupoms fiscais em PDF. O objetivo do ComprazFX é facilitar o controle de despesas, permitindo o cadastro, visualização e geração de relatórios de compras de forma prática e eficiente. 🚀
 
-![JavaFX](https://img.shields.io/badge/JavaFX-UI-blue?style=for-the-badge&logo=java)  
-![Maven](https://img.shields.io/badge/Maven-Build-orange?style=for-the-badge&logo=apachemaven)  
+## 🌟 **Principais Funcionalidades**
 
-## 📌 Descrição  
+- 📥 **Importação de PDFs**: Extração automática de dados de cupoms fiscais em PDF.
+- 🗃️ **Gestão de Compras e Itens**: Cadastro, consulta e gerenciamento de compras e itens.
+- 📊 **Relatórios Detalhados**: Geração de relatórios em PDF com resumo de gastos.
+- 🔍 **Filtros Avançados**: Pesquisa por nome do estabelecimento e período de tempo.
+- 🖥️ **Interface Gráfica Moderna**: Desenvolvida com JavaFX para uma experiência fluida e intuitiva.
 
-**ComprazFx** é uma aplicação desenvolvida em **JavaFX** que permite visualizar e cadastrar compras a partir de notas fiscais.  
-A interface interage com uma API REST para buscar informações sobre compras, além de possibilitar o **upload de arquivos PDF**.  
+## ⚙️ **Tecnologias Utilizadas**
 
----
+- **Java 17** ☕
+- **JavaFX** para a interface gráfica 🎨
+- **Spring Boot** para a estrutura do backend 🚀
+- **JPA (Hibernate)** para persistência de dados 🗂️
+- **SQLite** como banco de dados local 💾
+- **Apache PDFBox** para extração de texto de PDFs 📄
+- **iText PDF** para geração de relatórios em PDF 📝
 
-## 🚀 Tecnologias Utilizadas  
+## 🚀 **Como Executar o Projeto**
 
-- **JavaFX** 🎨 – Interface gráfica  
-- **Maven** 🏗️ – Gerenciamento de dependências  
-- **OkHttp** 🌐 – Cliente HTTP para envio de arquivos  
-- **Gson** 🛠️ – Manipulação de JSON  
-- **Spring RestTemplate** 🔗 – Consumo de APIs  
-- **Java 17+** ☕ – Linguagem principal  
+1. **Pré-requisitos:**
+   - Java 17 ou superior
+   - Maven ou Gradle (para build)
 
----
-
-## 🛠️ Funcionalidades  
-
-✅ Busca de itens comprados por estabelecimento e período 📊  
-✅ Exibição de lista de compras em tabela interativa 📄  
-✅ Upload de arquivos PDF de notas fiscais 📎  
-✅ Geração de relatórios em PDF 📑  
-✅ Splash screen personalizada para carregamento inicial 🎨  
-
----
-
-## ▶️ Como Executar  
-
-1. **Clone o repositório**  
-   ```sh
+2. **Clone o repositório:**
+   ```bash
    git clone https://github.com/seu-usuario/comprazfx.git
-2. **Acesse a pasta do projeto**
-   ```sh
    cd comprazfx
-3. **Compile e execute com Maven**
-   ```sh
-   mvn clean javafx:run
-   
-Observação: Certifique-se de que sua API Compraz está rodando localmente (http://localhost:8080) antes de executar a aplicação.
-b
+   ```
 
-📤 Endpoints Consumidos
-A aplicação interage com os seguintes endpoints da API Compraz:
+3. **Execute a aplicação:**
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+   ou
+   ```bash
+   java -jar target/comprazfx.jar
+   ```
 
-📌 Buscar Itens
- ``` bash
-  GET http://localhost:8080/api/item/itens
+## 🗂️ **Estrutura do Projeto**
+
 ```
-📌 Somatório de valores
- ``` bash
-  GET http://localhost:8080/api/item/soma-valor-unitario
- ````
-📌 Upload de PDF
-``` bash
-  POST http://localhost:8080/api/pdf/upload
+comprazfx/
+├── src/
+│   ├── main/java/com/marciliojr/comprazfx/
+│   │   ├── model/               # Entidades JPA (Compra, Item, Estabelecimento)
+│   │   ├── service/             # Lógica de negócios e serviços
+│   │   ├── repository/          # Interfaces do Spring Data JPA
+│   │   ├── infra/               # Utilitários e integração (PDF, DB)
+│   │   ├── ApplicationFX.java   # Classe principal do JavaFX
+│   │   └── SpringBootApp.java   # Classe principal do Spring Boot
+│   └── resources/
+│       ├── application.properties # Configuração do banco de dados
+│       └── main-view.fxml        # Layout da interface gráfica
+└── database/                    # Banco de dados SQLite local
 ```
-📌 Gerar Relatório PDF
-``` bash
-GET http://localhost:8080/api/item/exportar/pdf
-````
+
+## 📄 **Exemplos de Uso**
+
+- **Importar uma cupom fiscal:**
+  1. Clique em "Carregar PDF" e selecione o arquivo.
+  2. Insira o nome do estabelecimento.
+  3. Clique em "Cadastrar" para importar os dados.
+
+- **Gerar relatório:**
+  1. Aplique filtros de data e nome do estabelecimento.
+  2. Clique em "Gerar PDF" para obter um relatório completo.
+
+## 🛠️ **Configurações Importantes**
+
+O banco de dados está configurado para funcionar localmente usando SQLite. O arquivo de configuração está localizado em `application.properties`:
+
+```properties
+spring.datasource.url=jdbc:sqlite:database.db
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+## 🤝 **Contribuições**
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e enviar pull requests. ✨
+
+## 📢 **Licença**
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+

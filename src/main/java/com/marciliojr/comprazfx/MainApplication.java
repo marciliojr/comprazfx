@@ -18,6 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -98,6 +99,13 @@ public class MainApplication extends Application {
                     Scene scene = new Scene(fxmlLoader.load(), 900, 700);
                     stage.setTitle(APP_TITLE);
                     stage.setScene(scene);
+                    stage.setOnCloseRequest((WindowEvent event) -> {
+                        if (SpringBootApp.context != null) {
+                            SpringBootApp.context.close(); // Finaliza o contexto do Spring
+                        }
+                        Platform.exit(); // Encerra o JavaFX
+                        System.exit(0);  // Encerra a aplicação completamente
+                    });
                     stage.show();
                 } catch (IOException e) {
                     e.printStackTrace();

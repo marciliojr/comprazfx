@@ -12,6 +12,6 @@ public class SpringBootApp {
     public static void main(String[] args) {
         DatabaseInitializer.init();
         context = SpringApplication.run(SpringBootApp.class, args);
-        MainApplication.launch(MainApplication.class, args);
+        ApplicationFX.launch(ApplicationFX.class, args);
     }
 }

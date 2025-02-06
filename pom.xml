@@ -160,7 +160,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.marciliojr.comprazfx.MainApplication</mainClass>
+                    <mainClass>com.marciliojr.comprazfx.ApplicationFX</mainClass>
                     <modules>
                         <module>javafx.controls</module>
                         <module>javafx.fxml</module>

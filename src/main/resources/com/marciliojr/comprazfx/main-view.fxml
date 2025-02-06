@@ -2,9 +2,10 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+<TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
+         minHeight="-Infinity"
          minWidth="-Infinity" prefHeight="635.0" prefWidth="937.0" tabClosingPolicy="UNAVAILABLE"
-         xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.marciliojr.comprazfx.MainApplication">
+         xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.marciliojr.comprazfx.ApplicationFX">
     <tabs>
         <Tab text="Cadastrar Notas">
             <content>

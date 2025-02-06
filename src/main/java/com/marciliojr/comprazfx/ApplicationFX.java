@@ -1,7 +1,9 @@
 package com.marciliojr.comprazfx;
 
-import com.marciliojr.comprazfx.infra.PersistenciaPDF;
+import com.marciliojr.comprazfx.infra.PDFExtractor;
 import com.marciliojr.comprazfx.model.dto.ItemDTO;
+import com.marciliojr.comprazfx.service.ItemService;
+import com.marciliojr.comprazfx.service.PDFDataService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -24,22 +26,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainApplication extends Application {
+import static com.marciliojr.comprazfx.infra.ComprazUtils.parseDate;
+
+public class ApplicationFX extends Application {
 
     private static final String APP_TITLE = "Compraz - Gestor compras por nota fiscal";
     private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
+    private final ItemService itemService = SpringBootApp.context.getBean(ItemService.class);
+    private final PDFDataService pdfDataService = SpringBootApp.context.getBean(PDFDataService.class);
     @FXML
     private Button carregarPdfButton;
     @FXML
@@ -74,12 +75,6 @@ public class MainApplication extends Application {
     private Label somatorioValorItem;
     private File file;
 
-    @FXML
-    private void pesquisar(ActionEvent event) {
-        carregarItens();
-        carregarValorSomatorio();
-    }
-
     @Override
     public void start(Stage stage) throws IOException {
         Stage splashStage = createSplashScreen();
@@ -95,8 +90,8 @@ public class MainApplication extends Application {
             Platform.runLater(() -> {
                 splashStage.close();
                 try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
-                    Scene scene = new Scene(fxmlLoader.load(), 900, 700);
+                    FXMLLoader fxmlLoader = new FXMLLoader(ApplicationFX.class.getResource("main-view.fxml"));
+                    Scene scene = new Scene(fxmlLoader.load(), 800, 600);
                     stage.setTitle(APP_TITLE);
                     stage.setScene(scene);
                     stage.setOnCloseRequest((WindowEvent event) -> {
@@ -125,100 +120,13 @@ public class MainApplication extends Application {
         colunaDataCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompra"));
 
         tabelaItens.setItems(listaItens);
-
     }
 
-    private void carregarItens() {
-
+    @FXML
+    private void pesquisar(ActionEvent event) {
+        carregarItens();
+        carregarValorSomatorio();
     }
-
-
-    private void carregarValorSomatorio() {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(gerarUrlSomatorioDias(nomeEstabelecimentoTextFieldPesquisa.getText(), dataInicio.getValue(), dataFim.getValue())))
-                .GET()
-                .build();
-
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(this::atualizarSomatorioLabel)
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
-    }
-
-    private void atualizarSomatorioLabel(String responseBody) {
-        Platform.runLater(() -> {
-            try {
-                // Expressão regular para encontrar o primeiro número decimal válido
-                Pattern pattern = Pattern.compile("(\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{1,2})?)");
-                Matcher matcher = pattern.matcher(responseBody);
-
-                if (!matcher.find()) {
-                    somatorioValorItem.setText("Erro ao carregar total");
-                    System.err.println("Nenhum número válido encontrado na resposta.");
-                    return;
-                }
-                // Captura apenas o primeiro número válido
-                String valorLimpo = matcher.group().replace(",", ".");
-
-                // Converte para BigDecimal
-                BigDecimal somatorio = new BigDecimal(valorLimpo);
-
-                // Formata no padrão brasileiro (ex: 1.000,00)
-                NumberFormat formatoMoeda = NumberFormat.getInstance(new Locale("pt", "BR"));
-                formatoMoeda.setMinimumFractionDigits(2);
-                String valorExibido = formatoMoeda.format(somatorio);
-
-                somatorioValorItem.setText("R$ " + valorExibido);
-            } catch (Exception e) {
-                somatorioValorItem.setText("Erro ao carregar total");
-                System.err.println("Erro ao converter resposta: " + e.getMessage());
-            }
-        });
-    }
-
-
-    private String gerarUrlDosItens(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
-        return null;
-    }
-
-    private String gerarUrlSomatorioDias(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
-        return null;
-    }
-
-    private void atualizarTabela(String responseBody) {
-        try {
-            List<ItemDTO> itens = null;
-
-            Platform.runLater(() -> {
-                listaItens.clear();
-                listaItens.addAll(itens);
-            });
-
-        } catch (RuntimeException e) {
-            System.err.println("Ao Listar " + e.getMessage());
-        }
-    }
-
-
-    private Stage createSplashScreen() {
-        Stage splashStage = new Stage();
-        splashStage.initStyle(StageStyle.UNDECORATED);
-
-        StackPane splashRoot = new StackPane();
-        ImageView splashImage = new ImageView(new Image(getClass().getResource("/imagens/splash.png").toExternalForm()));
-        splashImage.setFitWidth(700);
-        splashImage.setFitHeight(500);
-        splashRoot.getChildren().add(splashImage);
-        Scene splashScene = new Scene(splashRoot, 700, 500);
-
-        splashStage.setScene(splashScene);
-        return splashStage;
-    }
-
 
     @FXML
     private void carregarPdf(ActionEvent event) {
@@ -233,68 +141,20 @@ public class MainApplication extends Application {
     @FXML
     private void cadastrar(ActionEvent event) {
         if (!validarCadastro()) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao cadastrar", "Ocorreu um erro ao tentar cadastrar o arquivo.");
             return;
         }
 
         try {
-            PersistenciaPDF.enviarArquivo(file, nomeEstabelecimentoTextField.getText().trim(), dataCadastro.getValue());
+            PDFExtractor pdfExtractor = new PDFExtractor();
+            String pdfString = pdfExtractor.extrairTextoPDF(file);
+
+            pdfDataService.processarDadosEPersistir(pdfString, nomeEstabelecimentoTextField.getText(), parseDate(dataCadastro.getValue().toString()));
             mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Arquivo cadastrado com sucesso!");
             limparCampos();
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Erro ao cadastrar", "Ocorreu um erro ao tentar cadastrar o arquivo: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void teste(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Teste de Conexão");
-        alert.setHeaderText(null);
-        alert.showAndWait();
-    }
-
-    private File abrirFileChooser(String descricao, String... extensoes) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(descricao, extensoes));
-        Stage stage = (Stage) carregarPdfButton.getScene().getWindow();
-        return fileChooser.showOpenDialog(stage);
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensagem);
-        alert.showAndWait();
-    }
-
-    private void atualizarCampoTexto(TextField campo, String texto) {
-        campo.setText(texto);
-    }
-
-    private void limparCampos() {
-        fileNameTextField.clear();
-        nomeEstabelecimentoTextField.clear();
-        file = null;
-    }
-
-    private boolean validarCadastro() {
-        if (file == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Arquivo não selecionado", "Por favor, selecione um arquivo PDF antes de cadastrar.");
-            return false;
-        }
-
-        String nomeEstabelecimento = nomeEstabelecimentoTextField.getText().trim();
-        if (nomeEstabelecimento.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Nome do Estabelecimento vazio", "Por favor, preencha o nome do estabelecimento.");
-            return false;
-        }
-
-        return true;
-    }
-
-    private String gerarUrlPDF(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
-        return null;
     }
 
     @FXML
@@ -320,11 +180,117 @@ public class MainApplication extends Application {
         }
     }
 
+    private void carregarItens() {
+        Platform.runLater(() -> {
+            listaItens.clear();
+            listaItens.addAll(itemService.listarItensPorEstabelecimentoEPeriodo(
+                    nomeEstabelecimentoTextFieldPesquisa.getText(),
+                    dataInicio.getValue(),
+                    dataFim.getValue()
+            ));
+        });
+    }
+
+    private void carregarValorSomatorio() {
+        BigDecimal somatorio = itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(
+                nomeEstabelecimentoTextFieldPesquisa.getText(),
+                dataInicio.getValue(),
+                dataFim.getValue()
+        );
+        atualizarSomatorioLabel(somatorio.toString());
+    }
+
+    private void atualizarSomatorioLabel(String valorString) {
+        Platform.runLater(() -> {
+            try {
+                // Expressão regular para encontrar o primeiro número decimal válido
+                Pattern pattern = Pattern.compile("(\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{1,2})?)");
+                Matcher matcher = pattern.matcher(valorString);
+                if (!matcher.find()) {
+                    somatorioValorItem.setText("Erro ao carregar total");
+                    System.err.println("Nenhum número válido encontrado na resposta.");
+                    return;
+                }
+                // Captura apenas o primeiro número válido
+                String valorLimpo = matcher.group().replace(",", ".");
+                // Converte para BigDecimal
+                BigDecimal somatorio = new BigDecimal(valorLimpo);
+                // Formata no padrão brasileiro (ex: 1.000,00)
+                NumberFormat formatoMoeda = NumberFormat.getInstance(new Locale("pt", "BR"));
+                formatoMoeda.setMinimumFractionDigits(2);
+                String valorExibido = formatoMoeda.format(somatorio);
+                somatorioValorItem.setText("R$ " + valorExibido);
+            } catch (Exception e) {
+                somatorioValorItem.setText("Erro ao carregar total");
+                System.err.println("Erro ao converter resposta: " + e.getMessage());
+            }
+        });
+    }
+
+    private Stage createSplashScreen() {
+        Stage splashStage = new Stage();
+        splashStage.initStyle(StageStyle.UNDECORATED);
+
+        StackPane splashRoot = new StackPane();
+        ImageView splashImage = new ImageView(new Image(getClass().getResource("/imagens/splash.png").toExternalForm()));
+        splashImage.setFitWidth(700);
+        splashImage.setFitHeight(500);
+        splashRoot.getChildren().add(splashImage);
+        Scene splashScene = new Scene(splashRoot, 700, 500);
+
+        splashStage.setScene(splashScene);
+        return splashStage;
+    }
+
+    private File abrirFileChooser(String descricao, String... extensoes) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(descricao, extensoes));
+        Stage stage = (Stage) carregarPdfButton.getScene().getWindow();
+        return fileChooser.showOpenDialog(stage);
+    }
+
+    private void atualizarCampoTexto(TextField campo, String texto) {
+        campo.setText(texto);
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
+
     private void mostrarMensagem(String titulo, String mensagem) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensagem);
         alert.showAndWait();
+    }
+
+    private void limparCampos() {
+        fileNameTextField.clear();
+        nomeEstabelecimentoTextField.clear();
+        file = null;
+    }
+
+    private boolean validarCadastro() {
+        if (file == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Arquivo não selecionado", "Por favor, selecione um arquivo PDF antes de cadastrar.");
+            return false;
+        }
+
+        String nomeEstabelecimento = nomeEstabelecimentoTextField.getText().trim();
+        if (nomeEstabelecimento.isEmpty()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Nome do Estabelecimento vazio", "Por favor, preencha o nome do estabelecimento.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private String gerarUrlPDF(String nomeEstabelecimento, LocalDate dataInicio, LocalDate dataFim) {
+        return null;
     }
 }

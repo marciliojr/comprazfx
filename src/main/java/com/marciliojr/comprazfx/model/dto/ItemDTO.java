@@ -1,7 +1,6 @@
 package com.marciliojr.comprazfx.model.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class ItemDTO {
@@ -12,13 +11,13 @@ public class ItemDTO {
     private String unidade;
     private BigDecimal valorTotal;
     private BigDecimal valorUnitario;
-    private LocalDate dataCompra;
+    private String dataCompra;
     private String nomeEstabelecimento;
 
     public ItemDTO() {
     }
 
-    public ItemDTO(Long id, String nome, BigDecimal quantidade, String unidade, BigDecimal valorTotal, BigDecimal valorUnitario, LocalDate dataCompra, String nomeEstabelecimento) {
+    public ItemDTO(Long id, String nome, BigDecimal quantidade, String unidade, BigDecimal valorTotal, BigDecimal valorUnitario, String dataCompra, String nomeEstabelecimento) {
         this.id = id;
         this.nome = nome;
         this.quantidade = quantidade;
@@ -29,16 +28,28 @@ public class ItemDTO {
         this.nomeEstabelecimento = nomeEstabelecimento;
     }
 
-    public static ItemDTO construirComAtributosBasicos(String nome, BigDecimal quantidade, String unidade,
-                                                       BigDecimal valorTotal, BigDecimal valorUnitario, LocalDate dataCompra) {
-        ItemDTO item = new ItemDTO();
-        item.setNome(nome);
-        item.setQuantidade(quantidade);
-        item.setUnidade(unidade);
-        item.setDataCompra(dataCompra);
-        item.setValorTotal(valorTotal);
-        item.setValorUnitario(valorUnitario);
-        return item;
+    public ItemDTO(String nome, BigDecimal quantidade, String unidade, BigDecimal valorTotal, BigDecimal valorUnitario, String dataCompra, String nomeEstabelecimento) {
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.unidade = unidade;
+        this.valorTotal = valorTotal;
+        this.valorUnitario = valorUnitario;
+        this.dataCompra = dataCompra;
+        this.nomeEstabelecimento = nomeEstabelecimento;
+    }
+
+    public static ItemDTO construir(String nome, BigDecimal quantidade, String unidade,
+                                    BigDecimal valorTotal, BigDecimal valorUnitario,
+                                    String dataCompra, String nomeEstabelecimento) {
+        ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setNome(nome);
+        itemDTO.setQuantidade(quantidade);
+        itemDTO.setUnidade(unidade);
+        itemDTO.setValorTotal(valorTotal);
+        itemDTO.setValorUnitario(valorUnitario);
+        itemDTO.setDataCompra(dataCompra);
+        itemDTO.setNomeEstabelecimento(nomeEstabelecimento);
+        return itemDTO;
     }
 
     public Long getId() {
@@ -89,11 +100,11 @@ public class ItemDTO {
         this.valorUnitario = valorUnitario;
     }
 
-    public LocalDate getDataCompra() {
+    public String getDataCompra() {
         return dataCompra;
     }
 
-    public void setDataCompra(LocalDate dataCompra) {
+    public void setDataCompra(String dataCompra) {
         this.dataCompra = dataCompra;
     }
 
@@ -126,7 +137,7 @@ public class ItemDTO {
                 ", unidade='" + unidade + '\'' +
                 ", valorTotal=" + valorTotal +
                 ", valorUnitario=" + valorUnitario +
-                ", dataCompra=" + dataCompra +
+                ", dataCompra='" + dataCompra + '\'' +
                 ", nomeEstabelecimento='" + nomeEstabelecimento + '\'' +
                 '}';
     }

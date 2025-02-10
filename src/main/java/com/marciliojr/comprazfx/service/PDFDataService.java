@@ -1,6 +1,5 @@
 package com.marciliojr.comprazfx.service;
 
-
 import com.marciliojr.comprazfx.model.Compra;
 import com.marciliojr.comprazfx.model.Estabelecimento;
 import com.marciliojr.comprazfx.model.Item;
@@ -15,6 +14,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,14 +34,6 @@ public class PDFDataService {
     @Autowired
     private EstabelecimentoRepository estabelecimentoRepository;
 
-    public PDFDataService(CompraRepository compraRepository, EstabelecimentoRepository estabelecimentoRepository) {
-        this.compraRepository = compraRepository;
-        this.estabelecimentoRepository = estabelecimentoRepository;
-    }
-
-    public PDFDataService() {
-    }
-
     public void processarDadosEPersistir(String textoPDF, String nomeEstabelecimento, LocalDate dataCadastro) {
         validarEntradas(textoPDF, nomeEstabelecimento);
 
@@ -60,26 +52,22 @@ public class PDFDataService {
     }
 
     private void validarEntradas(String textoPDF, String nomeEstabelecimento) {
-        if (isTextoVazioOuNulo(textoPDF, "Erro: O texto do PDF está vazio ou nulo.")) {
-            throw new IllegalArgumentException("Texto do PDF não pode ser vazio ou nulo.");
-        }
-        if (isTextoVazioOuNulo(nomeEstabelecimento, "Erro: O nome do estabelecimento está vazio ou nulo.")) {
-            throw new IllegalArgumentException("Nome do estabelecimento não pode ser vazio ou nulo.");
+        if (isTextoVazioOuNulo(textoPDF, "Erro: O texto do PDF está vazio ou nulo.") || isTextoVazioOuNulo(nomeEstabelecimento, "Erro: O nome do estabelecimento está vazio ou nulo.")) {
+            throw new IllegalArgumentException("Texto do PDF e nome do estabelecimento não podem ser vazios ou nulos.");
         }
     }
 
     private Estabelecimento salvarEstabelecimento(String nome) {
-        return estabelecimentoRepository.findByNomeEstabelecimento(nome)
-                .orElseGet(() -> {
-                    Estabelecimento novoEstabelecimento = new Estabelecimento();
-                    novoEstabelecimento.setNomeEstabelecimento(nome);
-                    return estabelecimentoRepository.save(novoEstabelecimento);
-                });
+        return estabelecimentoRepository.findByNomeEstabelecimento(nome).orElseGet(() -> {
+            Estabelecimento novoEstabelecimento = new Estabelecimento();
+            novoEstabelecimento.setNomeEstabelecimento(nome);
+            return estabelecimentoRepository.save(novoEstabelecimento);
+        });
     }
 
     private Compra criarCompra(Estabelecimento estabelecimento, LocalDate dataCadastro) {
         Compra compra = new Compra();
-        compra.setDataCompra(isNull(dataCadastro) ? LocalDate.now() : dataCadastro);
+        compra.setDataCompra(isNull(dataCadastro) ? LocalDate.now().format(DateTimeFormatter.ISO_DATE) : dataCadastro.format(DateTimeFormatter.ISO_DATE));
         compra.setEstabelecimento(estabelecimento);
         return compra;
     }
@@ -103,20 +91,13 @@ public class PDFDataService {
     }
 
     private Item criarItemAPartirDoMatcher(Matcher matcher, NumberFormat nf, Compra compra) throws ParseException {
-        String nome = matcher.group(1).trim();
-        BigDecimal quantidade = new BigDecimal(nf.parse(matcher.group(2)).toString());
-        String unidade = matcher.group(3).trim();
-        BigDecimal valorUnitario = new BigDecimal(nf.parse(matcher.group(4)).toString());
-        BigDecimal valorTotal = new BigDecimal(nf.parse(matcher.group(5)).toString());
-
         Item item = new Item();
-        item.setNome(nome);
-        item.setQuantidade(quantidade);
-        item.setUnidade(unidade);
-        item.setValorUnitario(valorUnitario);
+        item.setNome(matcher.group(1).trim());
+        item.setQuantidade(new BigDecimal(nf.parse(matcher.group(2)).toString()));
+        item.setUnidade(matcher.group(3).trim());
+        item.setValorUnitario(new BigDecimal(nf.parse(matcher.group(4)).toString()));
+        item.setValorTotal(new BigDecimal(nf.parse(matcher.group(5)).toString()));
         item.setCompra(compra);
-        item.setValorTotal(valorTotal);
-
         return item;
     }
 

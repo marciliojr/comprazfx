@@ -2,7 +2,6 @@ package com.marciliojr.comprazfx.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,11 +19,20 @@ public class Compra {
     private Estabelecimento estabelecimento;
 
     @Column(nullable = false)
-    private LocalDate dataCompra;
+    private String dataCompra;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "compra")
     private List<Item> itens;
 
+    public Compra() {
+    }
+
+    public Compra(Long id, Estabelecimento estabelecimento, String dataCompra, List<Item> itens) {
+        this.id = id;
+        this.estabelecimento = estabelecimento;
+        this.dataCompra = dataCompra;
+        this.itens = itens;
+    }
 
     public Long getId() {
         return id;
@@ -42,11 +50,11 @@ public class Compra {
         this.estabelecimento = estabelecimento;
     }
 
-    public LocalDate getDataCompra() {
+    public String getDataCompra() {
         return dataCompra;
     }
 
-    public void setDataCompra(LocalDate dataCompra) {
+    public void setDataCompra(String dataCompra) {
         this.dataCompra = dataCompra;
     }
 
@@ -72,11 +80,6 @@ public class Compra {
 
     @Override
     public String toString() {
-        return "Compra{" +
-                "id=" + id +
-                ", estabelecimento=" + estabelecimento +
-                ", dataCompra=" + dataCompra +
-                ", itens=" + itens +
-                '}';
+        return "Compra{" + "id=" + id + ", estabelecimento=" + estabelecimento + ", dataCompra='" + dataCompra + '\'' + ", itens=" + itens + '}';
     }
 }

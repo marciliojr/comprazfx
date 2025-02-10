@@ -47,12 +47,11 @@ public class ApplicationFX extends Application {
     private static final int SPLASH_SCREEN_WIDTH = 800;
     private static final int SPLASH_SCREEN_HEIGHT = 600;
     private static final int SPLASH_SCREEN_DISPLAY_TIME = 3000;
-
     private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
     private final ItemService itemService = SpringBootApp.context.getBean(ItemService.class);
     private final PDFDataService pdfDataService = SpringBootApp.context.getBean(PDFDataService.class);
     private final PDFGenerationService pdfGenerationService = SpringBootApp.context.getBean(PDFGenerationService.class);
-
+    private BigDecimal somatorio = BigDecimal.ZERO;
     @FXML
     private Button carregarPdfButton;
     @FXML
@@ -184,7 +183,7 @@ public class ApplicationFX extends Application {
 
     @FXML
     public void gerarPDF(ActionEvent event) throws IOException {
-        byte[] pdfBytes = pdfGenerationService.generatePDF(new ArrayList<>(listaItens));
+        byte[] pdfBytes = pdfGenerationService.generatePDF(new ArrayList<>(listaItens), somatorio.toString());
 
         if (pdfBytes == null || pdfBytes.length == 0) {
             mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
@@ -224,21 +223,29 @@ public class ApplicationFX extends Application {
     }
 
     private void carregarValorSomatorio() {
-        BigDecimal somatorio = itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(Strings.isBlank(nomeEstabelecimentoTextFieldPesquisa.getText()) ? null : nomeEstabelecimentoTextFieldPesquisa.getText(), Objects.isNull(dataInicio.getValue()) ? null : dataInicio.getValue().format(DateTimeFormatter.ISO_DATE), Objects.isNull(dataFim.getValue()) ? null : dataFim.getValue().format(DateTimeFormatter.ISO_DATE));
+        somatorio = itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(Strings.isBlank(nomeEstabelecimentoTextFieldPesquisa.getText()) ? null : nomeEstabelecimentoTextFieldPesquisa.getText(), Objects.isNull(dataInicio.getValue()) ? null : dataInicio.getValue().format(DateTimeFormatter.ISO_DATE), Objects.isNull(dataFim.getValue()) ? null : dataFim.getValue().format(DateTimeFormatter.ISO_DATE));
         atualizarSomatorioLabel(somatorio.toString());
     }
 
     private void atualizarSomatorioLabel(String valorString) {
         Platform.runLater(() -> {
             try {
-                String valorExibido = formatarSomatorio(valorString);
-                somatorioValorItem.setText("R$ " + valorExibido);
+                somatorioValorItem.setText("R$ " + configurarSomatorio(valorString));
             } catch (Exception e) {
                 somatorioValorItem.setText(ERROR_MSG);
                 System.err.println("Erro ao converter resposta: " + e.getMessage());
             }
         });
     }
+
+
+    private String configurarSomatorio(String valorString) {
+        BigDecimal somatorio = new BigDecimal(valorString);
+        NumberFormat formatoMoeda = NumberFormat.getInstance(new Locale("pt", "BR"));
+        formatoMoeda.setMinimumFractionDigits(2);
+        return formatoMoeda.format(somatorio);
+    }
+
 
     private String formatarSomatorio(String valorString) {
         Pattern pattern = Pattern.compile("(\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{1,2})?)");

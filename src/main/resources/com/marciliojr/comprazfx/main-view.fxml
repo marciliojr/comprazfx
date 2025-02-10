@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.*?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
          minHeight="-Infinity"
          minWidth="-Infinity" prefHeight="635.0" prefWidth="937.0" tabClosingPolicy="UNAVAILABLE"
@@ -9,22 +9,31 @@
     <tabs>
         <Tab text="Cadastrar Notas">
             <content>
-                <AnchorPane prefHeight="348.0" prefWidth="937.0">
+                <AnchorPane>
                     <children>
                         <Label layoutX="21.0" layoutY="51.0" text="Nome Estabelecimento:"/>
-                        <TextField fx:id="nomeEstabelecimentoTextField" layoutX="158.0" layoutY="47.0" prefHeight="25.0"
-                                   prefWidth="386.0">
+                        <TextField fx:id="nomeEstabelecimentoTextField" layoutY="47.0" prefHeight="25.0">
+                            <AnchorPane.leftAnchor>158.0</AnchorPane.leftAnchor>
+                            <AnchorPane.rightAnchor>21.0</AnchorPane.rightAnchor>
                             <tooltip>
                                 <Tooltip text="Nome do Estabelecimento da compra"/>
                             </tooltip>
                         </TextField>
-                        <Button fx:id="carregarPdfButton" layoutX="21.0" layoutY="161.0" mnemonicParsing="false"
-                                onAction="#carregarPdf" prefHeight="25.0" prefWidth="134.0" text="Carregar PDF Nota"/>
-                        <TextField fx:id="fileNameTextField" layoutX="159.0" layoutY="161.0" prefHeight="25.0"
-                                   prefWidth="388.0"/>
-                        <Button layoutX="569.0" layoutY="161.0" mnemonicParsing="false" onAction="#cadastrar"
-                                text="Cadastrar"/>
-                        <DatePicker fx:id="dataCadastro" layoutX="158.0" layoutY="90.0">
+                        <Button fx:id="carregarPdfButton" layoutY="161.0" mnemonicParsing="false"
+                                onAction="#carregarPdf" prefHeight="25.0" text="Carregar PDF Nota">
+                            <AnchorPane.leftAnchor>21.0</AnchorPane.leftAnchor>
+                        </Button>
+                        <TextField fx:id="fileNameTextField" layoutY="161.0" prefHeight="25.0">
+                            <AnchorPane.leftAnchor>159.0</AnchorPane.leftAnchor>
+                            <AnchorPane.rightAnchor>150.0</AnchorPane.rightAnchor>
+                        </TextField>
+                        <Button layoutY="161.0" mnemonicParsing="false" onAction="#cadastrar"
+                                text="Cadastrar">
+                            <AnchorPane.rightAnchor>21.0</AnchorPane.rightAnchor>
+                        </Button>
+                        <DatePicker fx:id="dataCadastro" layoutY="90.0">
+                            <AnchorPane.leftAnchor>158.0</AnchorPane.leftAnchor>
+                            <AnchorPane.rightAnchor>21.0</AnchorPane.rightAnchor>
                             <tooltip>
                                 <Tooltip text="Data que a compra foi feita"/>
                             </tooltip>
@@ -36,10 +45,13 @@
         </Tab>
         <Tab text="Listar Notas">
             <content>
-                <AnchorPane prefHeight="534.0" prefWidth="736.0">
+                <AnchorPane>
                     <children>
-                        <TableView fx:id="tabelaItens" layoutX="33.0" layoutY="98.0" prefHeight="402.0"
-                                   prefWidth="864.0">
+                        <TableView fx:id="tabelaItens" layoutY="98.0">
+                            <AnchorPane.leftAnchor>33.0</AnchorPane.leftAnchor>
+                            <AnchorPane.rightAnchor>33.0</AnchorPane.rightAnchor>
+                            <AnchorPane.topAnchor>98.0</AnchorPane.topAnchor>
+                            <AnchorPane.bottomAnchor>100.0</AnchorPane.bottomAnchor>
                             <columns>
                                 <TableColumn fx:id="colunaNome" text="Nome"/>
                                 <TableColumn fx:id="colunaQuantidade" text="Quantidade"/>
@@ -50,24 +62,34 @@
                                 <TableColumn fx:id="colunaDataCompra" text="Data de compra"/>
                             </columns>
                         </TableView>
-                        <Label layoutX="33.0" layoutY="511.0" style="-fx-font-weight: bold;" text="Total: "/>
-                        <TextField fx:id="nomeEstabelecimentoTextFieldPesquisa" layoutX="137.0" layoutY="23.0"
-                                   prefHeight="25.0" prefWidth="366.0"/>
+                        <Label layoutY="511.0" style="-fx-font-weight: bold;" text="Total: ">
+                            <AnchorPane.leftAnchor>33.0</AnchorPane.leftAnchor>
+                        </Label>
+                        <TextField fx:id="nomeEstabelecimentoTextFieldPesquisa" layoutY="23.0" prefHeight="25.0">
+                            <AnchorPane.leftAnchor>137.0</AnchorPane.leftAnchor>
+                            <AnchorPane.rightAnchor>21.0</AnchorPane.rightAnchor>
+                        </TextField>
                         <Label layoutX="39.0" layoutY="67.0" text="Data Inicio:"/>
-                        <DatePicker fx:id="dataInicio" layoutX="137.0" layoutY="63.0">
-                            <tooltip>
-                                <Tooltip text="Data inicio do filtro"/>
-                            </tooltip>
+                        <DatePicker fx:id="dataInicio" layoutY="63.0">
+                            <AnchorPane.leftAnchor>137.0</AnchorPane.leftAnchor>
                         </DatePicker>
                         <Label layoutX="329.0" layoutY="67.0" text="Data Fim:"/>
-                        <DatePicker fx:id="dataFim" layoutX="401.0" layoutY="63.0"/>
-                        <Button layoutX="603.0" layoutY="63.0" mnemonicParsing="false" onAction="#pesquisar"
-                                text="Pesquisar"/>
-                        <Label fx:id="somatorioValorItem" layoutX="71.0" layoutY="511.0" style="-fx-font-weight: bold;"
-                               text="valor" textFill="#f50000"/>
+                        <DatePicker fx:id="dataFim" layoutY="63.0">
+                            <AnchorPane.leftAnchor>401.0</AnchorPane.leftAnchor>
+                        </DatePicker>
+                        <Button layoutY="63.0" mnemonicParsing="false" onAction="#pesquisar"
+                                text="Pesquisar">
+                            <AnchorPane.leftAnchor>603.0</AnchorPane.leftAnchor>
+                        </Button>
+                        <Label fx:id="somatorioValorItem" layoutY="511.0" style="-fx-font-weight: bold;"
+                               text="valor" textFill="#f50000">
+                            <AnchorPane.leftAnchor>71.0</AnchorPane.leftAnchor>
+                        </Label>
                         <Label layoutX="39.0" layoutY="27.0" text="Estabelecimento:"/>
-                        <Button layoutX="684.0" layoutY="63.0" mnemonicParsing="false" onAction="#gerarPDF"
-                                text="Gerar PDF"/>
+                        <Button layoutY="63.0" mnemonicParsing="false" onAction="#gerarPDF"
+                                text="Gerar PDF">
+                            <AnchorPane.leftAnchor>684.0</AnchorPane.leftAnchor>
+                        </Button>
                     </children>
                 </AnchorPane>
             </content>

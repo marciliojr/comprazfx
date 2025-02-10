@@ -5,6 +5,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -19,16 +20,14 @@ import java.util.List;
 @Service
 public class PDFGenerationService {
 
-    public byte[] generatePDF(List<ItemDTO> items) throws IOException {
+    public byte[] generatePDF(List<ItemDTO> items, String valorSomatorio) throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(outputStream);
             PdfDocument pdfDocument = new PdfDocument(writer);
             Document document = new Document(pdfDocument, PageSize.A4);
 
             // Adiciona o título
-            document.add(new Paragraph("Relatório de Compras")
-                    .setFontSize(14)
-                    .setFontColor(ColorConstants.BLACK).simulateBold());
+            document.add(new Paragraph("Relatório de Compras").setFontSize(14).setFontColor(ColorConstants.BLACK).simulateBold());
 
             // Define a tabela com o número de colunas
             float[] columnWidths = {3, 2, 2, 3, 2, 2};
@@ -55,6 +54,7 @@ public class PDFGenerationService {
 
             // Adiciona a tabela ao documento
             document.add(table);
+            document.add(new Paragraph("VALOR TOTAL DAS COMPRAS NO PERIODO: R$" + valorSomatorio).addStyle(new Style().setFontColor(ColorConstants.RED).simulateBold()).setFontSize(20));
             document.close();
 
             return outputStream.toByteArray();

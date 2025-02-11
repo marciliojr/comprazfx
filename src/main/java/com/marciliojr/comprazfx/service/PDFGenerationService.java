@@ -54,7 +54,7 @@ public class PDFGenerationService {
 
             // Adiciona a tabela ao documento
             document.add(table);
-            document.add(new Paragraph("VALOR TOTAL DAS COMPRAS NO PERIODO: R$" + valorSomatorio).addStyle(new Style().setFontColor(ColorConstants.RED).simulateBold()).setFontSize(20));
+            document.add(new Paragraph("VALOR TOTAL DAS COMPRAS NO PERIODO: R$" + valorSomatorio).addStyle(new Style().setFontColor(ColorConstants.RED).simulateBold()).setFontSize(16));
             document.close();
 
             return outputStream.toByteArray();

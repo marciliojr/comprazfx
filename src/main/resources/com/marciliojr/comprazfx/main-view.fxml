@@ -2,62 +2,72 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
-         minHeight="-Infinity"
-         minWidth="-Infinity" prefHeight="635.0" prefWidth="937.0" tabClosingPolicy="UNAVAILABLE"
-         xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.marciliojr.comprazfx.ApplicationFX">
+<TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" prefHeight="635.0" prefWidth="937.0"
+         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1"
+         fx:controller="com.marciliojr.comprazfx.ApplicationFX">
     <tabs>
+        <!-- Aba Cadastrar Notas -->
         <Tab text="Cadastrar Notas">
             <content>
                 <AnchorPane>
                     <children>
-                        <VBox spacing="10.0" fillWidth="true" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
+                        <VBox spacing="10.0" fillWidth="true" alignment="TOP_LEFT"
+                              AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
                               AnchorPane.rightAnchor="10.0">
+
+                            <Label text="Estabelecimento:"/>
+                            <TextField fx:id="nomeEstabelecimentoTextField" maxWidth="Infinity">
+                                <tooltip>
+                                    <Tooltip text="Nome do Estabelecimento da compra"/>
+                                </tooltip>
+                            </TextField>
+
+                            <Label text="Data Compra:"/>
+                            <DatePicker fx:id="dataCadastro" maxWidth="Infinity">
+                                <tooltip>
+                                    <Tooltip text="Data que a compra foi feita"/>
+                                </tooltip>
+                            </DatePicker>
+
+                            <Label text="Arquivo da Nota (PDF):"/>
                             <HBox spacing="10.0">
-                                <Label text="Nome Estabelecimento:"/>
-                                <TextField fx:id="nomeEstabelecimentoTextField" HBox.hgrow="ALWAYS">
-                                    <tooltip>
-                                        <Tooltip text="Nome do Estabelecimento da compra"/>
-                                    </tooltip>
-                                </TextField>
-                            </HBox>
-                            <HBox spacing="10.0">
-                                <Label text="Data Compra:"/>
-                                <DatePicker fx:id="dataCadastro" HBox.hgrow="ALWAYS">
-                                    <tooltip>
-                                        <Tooltip text="Data que a compra foi feita"/>
-                                    </tooltip>
-                                </DatePicker>
-                            </HBox>
-                            <HBox spacing="10.0">
-                                <Button fx:id="carregarPdfButton" mnemonicParsing="false" onAction="#carregarPdf"
-                                        text="Carregar PDF Nota"/>
+                                <Button fx:id="carregarPdfButton" mnemonicParsing="false"
+                                        onAction="#carregarPdf" text="Carregar PDF Nota"/>
                                 <TextField fx:id="fileNameTextField" HBox.hgrow="ALWAYS"/>
                                 <Button mnemonicParsing="false" onAction="#cadastrar" text="Cadastrar"/>
                             </HBox>
+
                         </VBox>
                     </children>
                 </AnchorPane>
             </content>
         </Tab>
+
+        <!-- Aba Listar Notas -->
         <Tab text="Listar Notas">
             <content>
                 <AnchorPane>
                     <children>
-                        <VBox spacing="10.0" fillWidth="true" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
+                        <VBox spacing="10.0" fillWidth="true" alignment="TOP_LEFT"
+                              AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
                               AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+
+                            <Label text="Estabelecimento:"/>
+                            <TextField fx:id="nomeEstabelecimentoTextFieldPesquisa" maxWidth="Infinity"/>
+
+                            <Label text="Período da Compra:"/>
                             <HBox spacing="10.0">
-                                <Label text="Estabelecimento:"/>
-                                <TextField fx:id="nomeEstabelecimentoTextFieldPesquisa" HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                                <Label text="Data Inicio:"/>
+                                <Label text="Data Início:"/>
                                 <DatePicker fx:id="dataInicio"/>
                                 <Label text="Data Fim:"/>
                                 <DatePicker fx:id="dataFim"/>
+                            </HBox>
+
+                            <HBox spacing="10.0">
                                 <Button mnemonicParsing="false" onAction="#pesquisar" text="Pesquisar"/>
                                 <Button mnemonicParsing="false" onAction="#gerarPDF" text="Gerar PDF"/>
                             </HBox>
+
                             <TableView fx:id="tabelaItens" VBox.vgrow="ALWAYS">
                                 <columns>
                                     <TableColumn fx:id="colunaNome" text="Nome"/>
@@ -66,36 +76,44 @@
                                     <TableColumn fx:id="colunaValor" text="Valor Unitário"/>
                                     <TableColumn fx:id="colunaValorTotal" text="Valor Total"/>
                                     <TableColumn fx:id="colunaEstabelecimento" text="Estabelecimento"/>
-                                    <TableColumn fx:id="colunaDataCompra" text="Data de compra"/>
+                                    <TableColumn fx:id="colunaDataCompra" text="Data de Compra"/>
                                 </columns>
                             </TableView>
+
                             <HBox spacing="10.0" alignment="CENTER_RIGHT">
                                 <Label style="-fx-font-weight: bold;" text="Total: "/>
-                                <Label fx:id="somatorioValorItem" style="-fx-font-weight: bold;" text="valor"
-                                       textFill="#f50000"/>
+                                <Label fx:id="somatorioValorItem" style="-fx-font-weight: bold;"
+                                       text="valor" textFill="#f50000"/>
                             </HBox>
+
                         </VBox>
                     </children>
                 </AnchorPane>
             </content>
         </Tab>
+
+        <!-- Aba Gerenciar Compras -->
         <Tab text="Gerenciar Compras">
             <content>
                 <AnchorPane>
                     <children>
-                        <VBox spacing="10.0" fillWidth="true" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
+                        <VBox spacing="10.0" fillWidth="true" alignment="TOP_LEFT"
+                              AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
                               AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+
+                            <Label text="Estabelecimento:"/>
+                            <TextField fx:id="nomeEstabelecimentoTextFieldPesquisaCompras" maxWidth="Infinity"/>
+
+                            <Label text="Período da Compra:"/>
                             <HBox spacing="10.0">
-                                <Label text="Estabelecimento:"/>
-                                <TextField fx:id="nomeEstabelecimentoTextFieldPesquisaCompras" HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                                <Label text="Data Inicio:"/>
+                                <Label text="Data Início:"/>
                                 <DatePicker fx:id="dataInicioCompras"/>
                                 <Label text="Data Fim:"/>
                                 <DatePicker fx:id="dataFimCompras"/>
-                                <Button mnemonicParsing="false" onAction="#pesquisarCompras" text="Pesquisar"/>
                             </HBox>
+
+                            <Button mnemonicParsing="false" onAction="#pesquisarCompras" text="Pesquisar"/>
+
                             <TableView fx:id="tabelaCompras" VBox.vgrow="ALWAYS">
                                 <columns>
                                     <TableColumn fx:id="colunaEstabelecimentoCompra" text="Estabelecimento"/>
@@ -103,6 +121,7 @@
                                     <TableColumn fx:id="colunaValorTotalCompra" text="Valor R$"/>
                                 </columns>
                             </TableView>
+
                         </VBox>
                     </children>
                 </AnchorPane>

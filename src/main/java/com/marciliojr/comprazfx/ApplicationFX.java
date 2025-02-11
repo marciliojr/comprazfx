@@ -1,7 +1,9 @@
 package com.marciliojr.comprazfx;
 
 import com.marciliojr.comprazfx.infra.PDFExtractor;
+import com.marciliojr.comprazfx.model.dto.CompraDTO;
 import com.marciliojr.comprazfx.model.dto.ItemDTO;
+import com.marciliojr.comprazfx.service.CompraService;
 import com.marciliojr.comprazfx.service.ItemService;
 import com.marciliojr.comprazfx.service.PDFDataService;
 import com.marciliojr.comprazfx.service.PDFGenerationService;
@@ -9,6 +11,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +25,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 
 import java.io.File;
@@ -35,22 +40,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.marciliojr.comprazfx.infra.ComprazUtils.parseDate;
 
 public class ApplicationFX extends Application {
 
+    private static final Logger logger = LogManager.getLogger(ApplicationFX.class);
     private static final String APP_TITLE = "Compraz - Gestor compras por nota fiscal";
     private static final String ERROR_MSG = "Erro ao carregar total";
     private static final int SPLASH_SCREEN_WIDTH = 800;
     private static final int SPLASH_SCREEN_HEIGHT = 600;
     private static final int SPLASH_SCREEN_DISPLAY_TIME = 3000;
     private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
+    private final ObservableList<CompraDTO> listaCompras = FXCollections.observableArrayList();
     private final ItemService itemService = SpringBootApp.context.getBean(ItemService.class);
     private final PDFDataService pdfDataService = SpringBootApp.context.getBean(PDFDataService.class);
     private final PDFGenerationService pdfGenerationService = SpringBootApp.context.getBean(PDFGenerationService.class);
+    private final CompraService compraService = SpringBootApp.context.getBean(CompraService.class);
     private BigDecimal somatorio = BigDecimal.ZERO;
     @FXML
     private Button carregarPdfButton;
@@ -62,6 +68,8 @@ public class ApplicationFX extends Application {
     private TextField nomeEstabelecimentoTextFieldPesquisa;
     @FXML
     private TableView<ItemDTO> tabelaItens;
+    @FXML
+    private TableView<CompraDTO> tabelaCompras;
     @FXML
     private TableColumn<ItemDTO, String> colunaNome;
     @FXML
@@ -77,6 +85,12 @@ public class ApplicationFX extends Application {
     @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaDataCompra;
     @FXML
+    private TableColumn<ItemDTO, BigDecimal> colunaValorTotalCompra;
+    @FXML
+    private TableColumn<ItemDTO, String> colunaEstabelecimentoCompra;
+    @FXML
+    private TableColumn<ItemDTO, BigDecimal> colunaDataCompraCompra;
+    @FXML
     private DatePicker dataInicio;
     @FXML
     private DatePicker dataFim;
@@ -84,7 +98,12 @@ public class ApplicationFX extends Application {
     private DatePicker dataCadastro;
     @FXML
     private Label somatorioValorItem;
-
+    @FXML
+    private DatePicker dataInicioCompras;
+    @FXML
+    private DatePicker dataFimCompras;
+    @FXML
+    private TextField nomeEstabelecimentoTextFieldPesquisaCompras;
     private File file;
 
     @Override
@@ -96,7 +115,7 @@ public class ApplicationFX extends Application {
             try {
                 Thread.sleep(SPLASH_SCREEN_DISPLAY_TIME);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Erro ao carregar splash screen", e);
             }
 
             Platform.runLater(() -> {
@@ -104,7 +123,7 @@ public class ApplicationFX extends Application {
                 try {
                     initializeMainStage(stage);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Erro ao inicializar a janela principal", e);
                 }
             });
         }).start();
@@ -129,11 +148,19 @@ public class ApplicationFX extends Application {
 
     @FXML
     private void initialize() {
-        configureTableColumns();
+        configuraTabelaAbaItens();
+        configuraTabelaAbaCompras();
         tabelaItens.setItems(listaItens);
+        tabelaCompras.setItems(listaCompras);
     }
 
-    private void configureTableColumns() {
+    private void configuraTabelaAbaCompras() {
+        colunaEstabelecimentoCompra.setCellValueFactory(new PropertyValueFactory<>("nomeEstabelecimento"));
+        colunaDataCompraCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompra"));
+        colunaValorTotalCompra.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
+    }
+
+    private void configuraTabelaAbaItens() {
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
         colunaUnidade.setCellValueFactory(new PropertyValueFactory<>("unidade"));
@@ -208,23 +235,61 @@ public class ApplicationFX extends Application {
         }
     }
 
+    @FXML
+    public void pesquisarCompras(ActionEvent event) {
+        carregarCompras();
+    }
+
+    private void carregarCompras() {
+        Task<List<CompraDTO>> task = new Task<>() {
+            @Override
+            protected List<CompraDTO> call() {
+                return getComprasPorEstabelecimentoEPeriodo();
+            }
+        };
+        task.setOnSucceeded(event -> listaCompras.setAll(task.getValue()));
+        new Thread(task).start();
+    }
+
+    private List<CompraDTO> getComprasPorEstabelecimentoEPeriodo() {
+        String nomeEstabelecimento = getNomeEstabelecimento(nomeEstabelecimentoTextFieldPesquisaCompras);
+        String dataInicioFormatada = parseDateToString(dataInicioCompras);
+        String dataFimFormatada = parseDateToString(dataFimCompras);
+
+        return compraService.listarComprasPorEstabelecimentoEPeriodo(nomeEstabelecimento, dataInicioFormatada, dataFimFormatada);
+    }
+
     private void carregarItens() {
-        Platform.runLater(() -> {
-            listaItens.clear();
-            listaItens.addAll(getItensPorEstabelecimentoEPeriodo());
-        });
+        Task<List<ItemDTO>> task = new Task<>() {
+            @Override
+            protected List<ItemDTO> call() {
+                return getItensPorEstabelecimentoEPeriodo();
+            }
+        };
+        task.setOnSucceeded(event -> listaItens.setAll(task.getValue()));
+        new Thread(task).start();
     }
 
     private List<ItemDTO> getItensPorEstabelecimentoEPeriodo() {
-        String nomeEstabelecimento = Strings.isBlank(nomeEstabelecimentoTextFieldPesquisa.getText()) ? null : nomeEstabelecimentoTextFieldPesquisa.getText();
-        String dataInicioFormatada = Objects.isNull(dataInicio.getValue()) ? null : dataInicio.getValue().format(DateTimeFormatter.ISO_DATE);
-        String dataFimFormatada = Objects.isNull(dataFim.getValue()) ? null : dataFim.getValue().format(DateTimeFormatter.ISO_DATE);
+        String nomeEstabelecimento = getNomeEstabelecimento(nomeEstabelecimentoTextFieldPesquisa);
+        String dataInicioFormatada = parseDateToString(dataInicio);
+        String dataFimFormatada = parseDateToString(dataFim);
         return itemService.listarItensPorEstabelecimentoEPeriodo(nomeEstabelecimento, dataInicioFormatada, dataFimFormatada);
     }
 
     private void carregarValorSomatorio() {
-        somatorio = itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(Strings.isBlank(nomeEstabelecimentoTextFieldPesquisa.getText()) ? null : nomeEstabelecimentoTextFieldPesquisa.getText(), Objects.isNull(dataInicio.getValue()) ? null : dataInicio.getValue().format(DateTimeFormatter.ISO_DATE), Objects.isNull(dataFim.getValue()) ? null : dataFim.getValue().format(DateTimeFormatter.ISO_DATE));
-        atualizarSomatorioLabel(somatorio.toString());
+        Task<BigDecimal> task = new Task<>() {
+            @Override
+            protected BigDecimal call() {
+                return itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(
+                        getNomeEstabelecimento(nomeEstabelecimentoTextFieldPesquisa),
+                        parseDateToString(dataInicio),
+                        parseDateToString(dataFim)
+                );
+            }
+        };
+        task.setOnSucceeded(event -> atualizarSomatorioLabel(task.getValue().toString()));
+        new Thread(task).start();
     }
 
     private void atualizarSomatorioLabel(String valorString) {
@@ -233,28 +298,13 @@ public class ApplicationFX extends Application {
                 somatorioValorItem.setText("R$ " + configurarSomatorio(valorString));
             } catch (Exception e) {
                 somatorioValorItem.setText(ERROR_MSG);
-                System.err.println("Erro ao converter resposta: " + e.getMessage());
+                logger.error("Erro ao converter resposta", e);
             }
         });
     }
 
-
     private String configurarSomatorio(String valorString) {
         BigDecimal somatorio = new BigDecimal(valorString);
-        NumberFormat formatoMoeda = NumberFormat.getInstance(new Locale("pt", "BR"));
-        formatoMoeda.setMinimumFractionDigits(2);
-        return formatoMoeda.format(somatorio);
-    }
-
-
-    private String formatarSomatorio(String valorString) {
-        Pattern pattern = Pattern.compile("(\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{1,2})?)");
-        Matcher matcher = pattern.matcher(valorString);
-        if (!matcher.find()) {
-            throw new IllegalArgumentException("Nenhum número válido encontrado na resposta.");
-        }
-        String valorLimpo = matcher.group().replace(",", ".");
-        BigDecimal somatorio = new BigDecimal(valorLimpo);
         NumberFormat formatoMoeda = NumberFormat.getInstance(new Locale("pt", "BR"));
         formatoMoeda.setMinimumFractionDigits(2);
         return formatoMoeda.format(somatorio);
@@ -317,5 +367,13 @@ public class ApplicationFX extends Application {
         }
 
         return true;
+    }
+
+    private String parseDateToString(DatePicker datePicker) {
+        return Objects.isNull(datePicker.getValue()) ? null : datePicker.getValue().format(DateTimeFormatter.ISO_DATE);
+    }
+
+    private String getNomeEstabelecimento(TextField textField) {
+        return Strings.isBlank(textField.getText()) ? null : textField.getText();
     }
 }

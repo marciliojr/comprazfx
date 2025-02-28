@@ -41,5 +41,16 @@ public class ItemService {
         return itemRepository.sumValorTotalByEstabelecimentoAndPeriodo(nomeEstabelecimento, dataInicio, dataFim);
     }
 
+    public List<ItemDTO> listarItensPorNomeEPeriodo(String nome, String dataInicio, String dataFim) {
+        return itemRepository.findByNomeByPeriodo(nome, dataInicio, dataFim);
+    }
+
+    public void deleteById(Long id) {
+        itemRepository.deleteById(id);
+    }
+
+    public void deleteByCompraId(Long compraId) {
+        itemRepository.deleteByCompraId(compraId);
+    }
 
 }

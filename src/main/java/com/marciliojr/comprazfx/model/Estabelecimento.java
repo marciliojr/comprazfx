@@ -14,13 +14,16 @@ public class Estabelecimento {
     @Column(nullable = false)
     private String nomeEstabelecimento;
 
+    @Enumerated(EnumType.STRING)
+    private TipoCupom tipoCupom;
 
     public Estabelecimento() {
     }
 
-    public Estabelecimento(Long id, String nomeEstabelecimento) {
+    public Estabelecimento(Long id, String nomeEstabelecimento, TipoCupom tipoCupom) {
         this.id = id;
         this.nomeEstabelecimento = nomeEstabelecimento;
+        this.tipoCupom = tipoCupom;
     }
 
     public Long getId() {
@@ -39,16 +42,27 @@ public class Estabelecimento {
         this.nomeEstabelecimento = nomeEstabelecimento;
     }
 
+    public TipoCupom getTipoCupom() {
+        return tipoCupom;
+    }
+
+    public void setTipoCupom(TipoCupom tipoCupom) {
+        this.tipoCupom = tipoCupom;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
+        if (!(o instanceof Estabelecimento)) return false;
         Estabelecimento that = (Estabelecimento) o;
-        return Objects.equals(id, that.id) && Objects.equals(nomeEstabelecimento, that.nomeEstabelecimento);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(nomeEstabelecimento, that.nomeEstabelecimento) &&
+                tipoCupom == that.tipoCupom;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nomeEstabelecimento);
+        return Objects.hash(id, nomeEstabelecimento, tipoCupom);
     }
 
     @Override
@@ -56,6 +70,7 @@ public class Estabelecimento {
         return "Estabelecimento{" +
                 "id=" + id +
                 ", nomeEstabelecimento='" + nomeEstabelecimento + '\'' +
+                ", tipoCupom=" + tipoCupom +
                 '}';
     }
 }

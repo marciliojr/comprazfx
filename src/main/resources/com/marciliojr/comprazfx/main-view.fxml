@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" prefHeight="635.0" prefWidth="937.0"
          tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1"
          fx:controller="com.marciliojr.comprazfx.ApplicationFX">
     <tabs>
-        <!-- Aba Cadastrar Notas -->
-        <Tab text="Cadastrar Notas">
+        <Tab fx:id="abaCadastro" text="Cadastrar Cupom">
             <content>
                 <AnchorPane>
                     <children>
-                        <VBox spacing="10.0" fillWidth="true" alignment="TOP_LEFT"
-                              AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
-                              AnchorPane.rightAnchor="10.0">
+                        <VBox alignment="TOP_LEFT" fillWidth="true" spacing="10.0" AnchorPane.leftAnchor="10.0"
+                              AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 
                             <Label text="Estabelecimento:"/>
-                            <TextField fx:id="nomeEstabelecimentoTextField" maxWidth="Infinity">
+                            <TextField fx:id="nomeEstabelecimentoCadastro" maxWidth="Infinity">
                                 <tooltip>
                                     <Tooltip text="Nome do Estabelecimento da compra"/>
                                 </tooltip>
@@ -28,13 +27,31 @@
                                     <Tooltip text="Data que a compra foi feita"/>
                                 </tooltip>
                             </DatePicker>
+                            <Label text="Tipo de Cupom"/>
+                            <ComboBox fx:id="comboTipoCupom" prefWidth="150.0"/>
 
-                            <Label text="Arquivo da Nota (PDF):"/>
+                            <Label text="Arquivo do Cupom (PDF):"/>
                             <HBox spacing="10.0">
-                                <Button fx:id="carregarPdfButton" mnemonicParsing="false"
-                                        onAction="#carregarPdf" text="Carregar PDF Nota"/>
+                                <Button fx:id="carregarPdfButton" mnemonicParsing="false" onAction="#carregarPdf"
+                                        text="Carregar PDF Cupom">
+                                    <graphic>
+                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <image>
+                                                <Image url="@/imagens/pdf.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
                                 <TextField fx:id="fileNameTextField" HBox.hgrow="ALWAYS"/>
-                                <Button mnemonicParsing="false" onAction="#cadastrar" text="Cadastrar"/>
+                                <Button mnemonicParsing="false" onAction="#cadastrar" text="Cadastrar">
+                                    <graphic>
+                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <image>
+                                                <Image url="@/imagens/salvar.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
                             </HBox>
 
                         </VBox>
@@ -43,17 +60,15 @@
             </content>
         </Tab>
 
-        <!-- Aba Listar Notas -->
-        <Tab text="Listar Notas">
+        <Tab fx:id="abaItensCupons" text="Itens de Cupons por Estabelecimento">
             <content>
                 <AnchorPane>
                     <children>
-                        <VBox spacing="10.0" fillWidth="true" alignment="TOP_LEFT"
-                              AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
-                              AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+                        <VBox alignment="TOP_LEFT" fillWidth="true" spacing="10.0" AnchorPane.bottomAnchor="10.0"
+                              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 
                             <Label text="Estabelecimento:"/>
-                            <TextField fx:id="nomeEstabelecimentoTextFieldPesquisa" maxWidth="Infinity"/>
+                            <TextField fx:id="nomeEstabelecimentoPesquisaItens" maxWidth="Infinity"/>
 
                             <Label text="Período da Compra:"/>
                             <HBox spacing="10.0">
@@ -64,8 +79,24 @@
                             </HBox>
 
                             <HBox spacing="10.0">
-                                <Button mnemonicParsing="false" onAction="#pesquisar" text="Pesquisar"/>
-                                <Button mnemonicParsing="false" onAction="#gerarPDF" text="Gerar PDF"/>
+                                <Button mnemonicParsing="false" onAction="#pesquisar" text="Pesquisar">
+                                    <graphic>
+                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <image>
+                                                <Image url="@/imagens/pesquisar.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button mnemonicParsing="false" onAction="#gerarPDF" text="Gerar PDF">
+                                    <graphic>
+                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <image>
+                                                <Image url="@/imagens/print.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
                             </HBox>
 
                             <TableView fx:id="tabelaItens" VBox.vgrow="ALWAYS">
@@ -80,10 +111,10 @@
                                 </columns>
                             </TableView>
 
-                            <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                            <HBox alignment="CENTER_RIGHT" spacing="10.0">
                                 <Label style="-fx-font-weight: bold;" text="Total: "/>
-                                <Label fx:id="somatorioValorItem" style="-fx-font-weight: bold;"
-                                       text="valor" textFill="#f50000"/>
+                                <Label fx:id="somatorioValorItem" style="-fx-font-weight: bold;" text="valor"
+                                       textFill="#f50000"/>
                             </HBox>
 
                         </VBox>
@@ -92,17 +123,15 @@
             </content>
         </Tab>
 
-        <!-- Aba Gerenciar Compras -->
-        <Tab text="Gerenciar Compras">
+        <Tab fx:id="abaCupons" text="Gerenciar Cupons">
             <content>
                 <AnchorPane>
                     <children>
-                        <VBox spacing="10.0" fillWidth="true" alignment="TOP_LEFT"
-                              AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0"
-                              AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+                        <VBox alignment="TOP_LEFT" fillWidth="true" spacing="10.0" AnchorPane.bottomAnchor="10.0"
+                              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 
                             <Label text="Estabelecimento:"/>
-                            <TextField fx:id="nomeEstabelecimentoTextFieldPesquisaCompras" maxWidth="Infinity"/>
+                            <TextField fx:id="nomeEstabelecimentoPesquisaCupons" maxWidth="Infinity"/>
 
                             <Label text="Período da Compra:"/>
                             <HBox spacing="10.0">
@@ -112,7 +141,15 @@
                                 <DatePicker fx:id="dataFimCompras"/>
                             </HBox>
 
-                            <Button mnemonicParsing="false" onAction="#pesquisarCompras" text="Pesquisar"/>
+                            <Button mnemonicParsing="false" onAction="#pesquisarCompras" text="Pesquisar">
+                                <graphic>
+                                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                        <image>
+                                            <Image url="@/imagens/pesquisar.png"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
 
                             <TableView fx:id="tabelaCompras" VBox.vgrow="ALWAYS">
                                 <columns>
@@ -126,6 +163,57 @@
                     </children>
                 </AnchorPane>
             </content>
+        </Tab>
+        <Tab text="Consultar Produtos">
+            <content>
+                <AnchorPane>
+                    <children>
+                        <VBox alignment="TOP_LEFT" fillWidth="true" spacing="10.0" AnchorPane.bottomAnchor="10.0"
+                              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                            <children>
+                                <Label text="Produtos:"/>
+                                <TextField fx:id="nomeProdutoTextField" maxWidth="Infinity"/>
+                                <Label text="Período da Compra:"/>
+                                <HBox spacing="10.0">
+                                    <children>
+                                        <Label text="Data Início:"/>
+                                        <DatePicker fx:id="dataInicioProduto"/>
+                                        <Label text="Data Fim:"/>
+                                        <DatePicker fx:id="dataFimProduto"/>
+                                    </children>
+                                </HBox>
+                                <Button mnemonicParsing="false" onAction="#pesquisarProdutos" text="Pesquisar">
+                                    <graphic>
+                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <image>
+                                                <Image url="@/imagens/pesquisar.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <TableView fx:id="tabelaProduto" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="colunaNomeProduto" text="Produto"/>
+                                        <TableColumn fx:id="colunaNomeEstabelecimentoProduto" text="Estabelecimento"/>
+                                        <TableColumn fx:id="colunaDataProduto" text="Data Compra"/>
+                                        <TableColumn fx:id="colunaValorTotalProduto" text="Valor Total R$"/>
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="configurarTab" text="Configurar">
+            <AnchorPane>
+                <children>
+                    <ComboBox fx:id="comboBoxCss" layoutX="30.0" layoutY="43.0" prefWidth="200"/>
+                    <Button fx:id="buttonAplicar" layoutX="250.0" layoutY="43.0" onAction="#aplicarEstilo"
+                            text="Aplicar"/>
+                    <Label layoutX="30.0" layoutY="14.0" text="Temas:"/>
+                </children>
+            </AnchorPane>
         </Tab>
     </tabs>
 </TabPane>

@@ -17,8 +17,6 @@ public class PDFDataProcessor {
             String valorUnitario = matcher.group(4).trim();
             String valorTotal = matcher.group(5).trim();
 
-            System.out.printf("Produto: %s, Qtde: %s, UN: %s, Valor Unitário: %s%n",
-                    nome, quantidade, unidade, valorUnitario);
         }
     }
 }

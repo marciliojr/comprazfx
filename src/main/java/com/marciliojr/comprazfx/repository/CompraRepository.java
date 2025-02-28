@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface CompraRepository extends JpaRepository<Compra, Long> {
 
-    @Query("SELECT new com.marciliojr.comprazfx.model.dto.CompraDTO(" + "e.nomeEstabelecimento, c.dataCompra, SUM(i.valorTotal)) " + "FROM Item i " + "JOIN i.compra c " + "JOIN c.estabelecimento e " + "WHERE (:nomeEstabelecimento IS NULL OR e.nomeEstabelecimento = :nomeEstabelecimento) " + "AND (:dataInicio IS NULL OR DATE(c.dataCompra) >= DATE(:dataInicio)) " + "AND (:dataFim IS NULL OR DATE(c.dataCompra) <= DATE(:dataFim)) GROUP BY e.nomeEstabelecimento, c.dataCompra")
+    @Query("SELECT new com.marciliojr.comprazfx.model.dto.CompraDTO(" + "c.id, e.nomeEstabelecimento, c.dataCompra, SUM(i.valorTotal)) " + "FROM Item i " + "JOIN i.compra c " + "JOIN c.estabelecimento e " + "WHERE (:nomeEstabelecimento IS NULL OR e.nomeEstabelecimento = :nomeEstabelecimento) " + "AND (:dataInicio IS NULL OR DATE(c.dataCompra) >= DATE(:dataInicio)) " + "AND (:dataFim IS NULL OR DATE(c.dataCompra) <= DATE(:dataFim)) GROUP BY e.nomeEstabelecimento, c.dataCompra")
     List<CompraDTO> findByNomeEstabelecimentoDataCompraValorTotal(String nomeEstabelecimento, String dataInicio, String dataFim);
 
 }

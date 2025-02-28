@@ -17,6 +17,21 @@ public class ItemDTO {
     public ItemDTO() {
     }
 
+    public ItemDTO(String nome, BigDecimal quantidade, String unidade, BigDecimal valorTotal, BigDecimal valorUnitario) {
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.unidade = unidade;
+        this.valorTotal = valorTotal;
+        this.valorUnitario = valorUnitario;
+    }
+
+    public ItemDTO(String descricao, BigDecimal quantidade, BigDecimal valorUnitario, BigDecimal valorItem) {
+        this.nome = descricao;
+        this.quantidade = quantidade;
+        this.valorUnitario = valorUnitario;
+        this.valorTotal = valorItem;
+    }
+
     public ItemDTO(Long id, String nome, BigDecimal quantidade, String unidade, BigDecimal valorTotal, BigDecimal valorUnitario, String dataCompra, String nomeEstabelecimento) {
         this.id = id;
         this.nome = nome;
@@ -106,6 +121,10 @@ public class ItemDTO {
 
     public void setDataCompra(String dataCompra) {
         this.dataCompra = dataCompra;
+    }
+
+    public String getDataCompraFormatada() {
+        return dataCompra.substring(8, 10) + "/" + dataCompra.substring(5, 7) + "/" + dataCompra.substring(0, 4);
     }
 
     public String getNomeEstabelecimento() {

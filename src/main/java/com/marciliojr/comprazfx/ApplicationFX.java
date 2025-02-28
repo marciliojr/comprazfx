@@ -2,6 +2,7 @@ package com.marciliojr.comprazfx;
 
 import com.marciliojr.comprazfx.infra.PDFExtractor;
 import com.marciliojr.comprazfx.model.Estabelecimento;
+import com.marciliojr.comprazfx.model.TipoCupom;
 import com.marciliojr.comprazfx.model.dto.CompraDTO;
 import com.marciliojr.comprazfx.model.dto.ItemDTO;
 import com.marciliojr.comprazfx.service.*;
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -27,52 +29,66 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.controlsfx.control.textfield.TextFields;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.marciliojr.comprazfx.infra.ComprazUtils.parseDate;
 
 public class ApplicationFX extends Application {
-
     private static final Logger logger = LogManager.getLogger(ApplicationFX.class);
-    private static final String APP_TITLE = "Compraz - Gestor compras por nota fiscal";
+    private static final String APP_TITLE = "ComprazFx - Gestor compras por cupom fiscal";
     private static final String ERROR_MSG = "Erro ao carregar total";
     private static final int SPLASH_SCREEN_WIDTH = 800;
     private static final int SPLASH_SCREEN_HEIGHT = 600;
     private static final int SPLASH_SCREEN_DISPLAY_TIME = 3000;
-
     private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
     private final ObservableList<CompraDTO> listaCompras = FXCollections.observableArrayList();
-
+    private final ObservableList<ItemDTO> listaProdutos = FXCollections.observableArrayList();
     private final ItemService itemService = SpringBootApp.context.getBean(ItemService.class);
-    private final PDFDataService pdfDataService = SpringBootApp.context.getBean(PDFDataService.class);
-    private final PDFGenerationService pdfGenerationService = SpringBootApp.context.getBean(PDFGenerationService.class);
+    private final PDFDadosService pdfDadosService = SpringBootApp.context.getBean(PDFDadosService.class);
+    private final PDFGeradorItensCupom pdfGeradorItensCupom = SpringBootApp.context.getBean(PDFGeradorItensCupom.class);
+    private final PDFGeradorProdutos pdfGeradorProdutos = SpringBootApp.context.getBean(PDFGeradorProdutos.class);
     private final CompraService compraService = SpringBootApp.context.getBean(CompraService.class);
     private final EstabelecimentoService estabelecimentoService = SpringBootApp.context.getBean(EstabelecimentoService.class);
-
+    private Scene scene;
+    private String currentUserCSS;
     @FXML
     private Button carregarPdfButton;
     @FXML
     private TextField fileNameTextField;
     @FXML
-    private TextField nomeEstabelecimentoTextField;
+    private TextField nomeEstabelecimentoCadastro;
     @FXML
-    private TextField nomeEstabelecimentoTextFieldPesquisa;
+    private TextField nomeEstabelecimentoPesquisaItens;
+    @FXML
+    private TextField nomeEstabelecimentoPesquisaCupons;
+    @FXML
+    private TextField nomeProdutoTextField;
     @FXML
     private TableView<ItemDTO> tabelaItens;
     @FXML
     private TableView<CompraDTO> tabelaCompras;
+    @FXML
+    private TableView<ItemDTO> tabelaProduto;
+    @FXML
+    private TableColumn<ItemDTO, String> colunaNomeProduto;
+    @FXML
+    private TableColumn<ItemDTO, String> colunaNomeEstabelecimentoProduto;
+    @FXML
+    private TableColumn<ItemDTO, BigDecimal> colunaDataProduto;
+    @FXML
+    private TableColumn<ItemDTO, String> colunaValorTotalProduto;
     @FXML
     private TableColumn<ItemDTO, String> colunaNome;
     @FXML
@@ -106,22 +122,33 @@ public class ApplicationFX extends Application {
     @FXML
     private DatePicker dataFimCompras;
     @FXML
-    private TextField nomeEstabelecimentoTextFieldPesquisaCompras;
-
+    private DatePicker dataInicioProduto;
+    @FXML
+    private DatePicker dataFimProduto;
+    @FXML
+    private ComboBox<String> comboBoxCss;
+    @FXML
+    private ComboBox<TipoCupom> comboTipoCupom;
+    @FXML
+    private Button buttonAplicar;
+    @FXML
+    private Tab abaItensCupons;
+    @FXML
+    private Tab abaCadastro;
+    @FXML
+    private Tab abaCupons;
     private File file;
 
     @Override
     public void start(Stage stage) throws IOException {
         Stage splashStage = createSplashScreen();
         splashStage.show();
-
         new Thread(() -> {
             try {
                 Thread.sleep(SPLASH_SCREEN_DISPLAY_TIME);
             } catch (InterruptedException e) {
                 logger.error("Erro ao carregar splash screen", e);
             }
-
             Platform.runLater(() -> {
                 splashStage.close();
                 try {
@@ -135,9 +162,12 @@ public class ApplicationFX extends Application {
 
     private void initializeMainStage(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ApplicationFX.class.getResource("main-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT);
+        Scene mainScene = new Scene(fxmlLoader.load(), SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT);
+        String cssArquivo = lerPropriedade("estilo", "compraz.css");
+        currentUserCSS = getClass().getResource("/css/" + cssArquivo).toExternalForm();
+        mainScene.getStylesheets().add(currentUserCSS);
+        stage.setScene(mainScene);
         stage.setTitle(APP_TITLE);
-        stage.setScene(scene);
         stage.setOnCloseRequest(this::handleCloseRequest);
         stage.show();
     }
@@ -154,22 +184,136 @@ public class ApplicationFX extends Application {
     private void initialize() {
         configuraTabelaAbaItens();
         configuraTabelaAbaCompras();
+        configuraTabelaAbaProdutos();
         tabelaItens.setItems(listaItens);
         tabelaCompras.setItems(listaCompras);
+        tabelaProduto.setItems(listaProdutos);
+        List<String> nomesEstabelecimentos = estabelecimentoService.listarTodos().stream().map(Estabelecimento::getNomeEstabelecimento).collect(Collectors.toList());
+        TextFields.bindAutoCompletion(nomeEstabelecimentoCadastro, nomesEstabelecimentos);
+        TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaItens, nomesEstabelecimentos);
+        TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaCupons, nomesEstabelecimentos);
+        tabelaCompras.setRowFactory(tv -> {
+            TableRow<CompraDTO> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem deleteItem = new MenuItem("Deletar Cupom");
+            deleteItem.setOnAction(event -> excluirCompra(row.getItem()));
+            contextMenu.getItems().addAll(deleteItem);
+            row.contextMenuProperty().bind(javafx.beans.binding.Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(contextMenu));
+            row.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY && !row.isEmpty()) {
+                    contextMenu.show(row, event.getScreenX(), event.getScreenY());
+                }
+            });
+            return row;
+        });
+        carregarListaCss();
+        carregarComboTipoCupom();
+        abaItensCupons.setOnSelectionChanged(event -> {
+            if (abaItensCupons.isSelected()) {
+                List<String> estabelecimentoAtualizados = estabelecimentoService.listarTodos().stream().map(Estabelecimento::getNomeEstabelecimento).collect(Collectors.toList());
+                TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaItens, estabelecimentoAtualizados);
+            }
+        });
+        abaCadastro.setOnSelectionChanged(event -> {
+            if (abaCadastro.isSelected()) {
+                List<String> estabelecimentoAtualizados = estabelecimentoService.listarTodos().stream().map(Estabelecimento::getNomeEstabelecimento).collect(Collectors.toList());
+                TextFields.bindAutoCompletion(nomeEstabelecimentoCadastro, estabelecimentoAtualizados);
+            }
+        });
+        abaCupons.setOnSelectionChanged(event -> {
+            if (abaCupons.isSelected()) {
+                List<String> estabelecimentoAtualizados = estabelecimentoService.listarTodos().stream().map(Estabelecimento::getNomeEstabelecimento).collect(Collectors.toList());
+                TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaCupons, estabelecimentoAtualizados);
+            }
+        });
+    }
 
-        List<String> nomesEstabelecimentos = estabelecimentoService.listarTodos().stream()
-                .map(Estabelecimento::getNomeEstabelecimento)
-                .collect(Collectors.toList());
+    private void carregarComboTipoCupom() {
+        comboTipoCupom.getItems().clear();
+        comboTipoCupom.getItems().addAll(Arrays.asList(TipoCupom.values()));
+    }
 
-        TextFields.bindAutoCompletion(nomeEstabelecimentoTextField, nomesEstabelecimentos);
-        TextFields.bindAutoCompletion(nomeEstabelecimentoTextFieldPesquisa, nomesEstabelecimentos);
-        TextFields.bindAutoCompletion(nomeEstabelecimentoTextFieldPesquisaCompras, nomesEstabelecimentos);
+    @FXML
+    public void aplicarEstilo() {
+        String cssSelecionado = comboBoxCss.getValue();
+        if (cssSelecionado == null || cssSelecionado.isEmpty()) {
+            return;
+        }
+        Scene cenaAtual = comboBoxCss.getScene();
+        if (cenaAtual == null) {
+            return;
+        }
+        if (currentUserCSS != null) {
+            cenaAtual.getStylesheets().remove(currentUserCSS);
+        }
+        String novoCSS = getClass().getResource("/css/" + cssSelecionado).toExternalForm();
+        cenaAtual.getStylesheets().add(novoCSS);
+        currentUserCSS = novoCSS;
+        atualizarPropriedade("estilo", cssSelecionado);
+    }
+
+    private void atualizarPropriedade(String chave, String valor) {
+        Properties props = new Properties();
+        File file = new File("config.properties");
+        try {
+            if (file.exists()) {
+                try (FileInputStream in = new FileInputStream(file)) {
+                    props.load(in);
+                }
+            }
+            props.setProperty(chave, valor);
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                props.store(out, "Configurações de CSS");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String lerPropriedade(String chave, String valorPadrao) {
+        Properties props = new Properties();
+        File file = new File("config.properties");
+        if (file.exists()) {
+            try (FileInputStream in = new FileInputStream(file)) {
+                props.load(in);
+                return props.getProperty(chave, valorPadrao);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return valorPadrao;
+    }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    private void carregarListaCss() {
+        try {
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("classpath:/css/*.css");
+            List<String> listaNomes = new ArrayList<>();
+            for (Resource resource : resources) {
+                listaNomes.add(resource.getFilename());
+            }
+            comboBoxCss.getItems().clear();
+            comboBoxCss.getItems().addAll(listaNomes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void configuraTabelaAbaCompras() {
         colunaEstabelecimentoCompra.setCellValueFactory(new PropertyValueFactory<>("nomeEstabelecimento"));
-        colunaDataCompraCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompra"));
+        colunaDataCompraCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompraFormatada"));
         colunaValorTotalCompra.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
+    }
+
+    private void configuraTabelaAbaProdutos() {
+        colunaNomeProduto.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colunaNomeEstabelecimentoProduto.setCellValueFactory(new PropertyValueFactory<>("nomeEstabelecimento"));
+        colunaDataProduto.setCellValueFactory(new PropertyValueFactory<>("dataCompraFormatada"));
+        colunaValorTotalProduto.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
     }
 
     private void configuraTabelaAbaItens() {
@@ -179,7 +323,7 @@ public class ApplicationFX extends Application {
         colunaValor.setCellValueFactory(new PropertyValueFactory<>("valorUnitario"));
         colunaValorTotal.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
         colunaEstabelecimento.setCellValueFactory(new PropertyValueFactory<>("nomeEstabelecimento"));
-        colunaDataCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompra"));
+        colunaDataCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompraFormatada"));
     }
 
     @FXML
@@ -204,7 +348,6 @@ public class ApplicationFX extends Application {
             mostrarAlerta(Alert.AlertType.ERROR, "Erro ao cadastrar", "Ocorreu um erro ao tentar cadastrar o arquivo.");
             return;
         }
-
         try {
             processarCadastro();
             mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Arquivo cadastrado com sucesso!");
@@ -217,34 +360,39 @@ public class ApplicationFX extends Application {
     private void processarCadastro() throws IOException {
         PDFExtractor pdfExtractor = new PDFExtractor();
         String pdfString = pdfExtractor.extrairTextoPDF(file);
-        pdfDataService.processarDadosEPersistir(pdfString, nomeEstabelecimentoTextField.getText(), parseDate(dataCadastro.getValue().toString()));
+        pdfDadosService.processarDadosEPersistir(pdfString, nomeEstabelecimentoCadastro.getText(), parseDate(dataCadastro.getValue().toString()), comboTipoCupom.getValue());
     }
 
     @FXML
     public void gerarPDF(ActionEvent event) throws IOException {
         BigDecimal somatorio = getSomatorio();
-        byte[] pdfBytes = pdfGenerationService.generatePDF(new ArrayList<>(listaItens), somatorio.toString());
-
+        byte[] pdfBytes = pdfGeradorItensCupom.generatePDF(new ArrayList<>(listaItens), somatorio.toString());
         if (pdfBytes == null || pdfBytes.length == 0) {
             mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
             return;
         }
-        montarRelatorioPDF(pdfBytes);
+        montarRelatorioPDF(pdfBytes, "itens");
+    }
+
+    @FXML
+    public void gerarPDFProduto(ActionEvent event) throws IOException {
+        byte[] pdfBytes = pdfGeradorProdutos.generatePDF(new ArrayList<>(listaItens));
+        if (pdfBytes == null || pdfBytes.length == 0) {
+            mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
+            return;
+        }
+        montarRelatorioPDF(pdfBytes, "produtos");
     }
 
     private BigDecimal getSomatorio() {
-        return itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(
-                getNomeEstabelecimento(nomeEstabelecimentoTextFieldPesquisa),
-                parseDateToString(dataInicio),
-                parseDateToString(dataFim));
+        return itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(getNome(nomeEstabelecimentoPesquisaItens), parseDateToString(dataInicio), parseDateToString(dataFim));
     }
 
-    private void montarRelatorioPDF(byte[] pdfBytes) {
+    private void montarRelatorioPDF(byte[] pdfBytes, String tipoRelatorio) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-        fileChooser.setInitialFileName("relatorio_compras_" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ".pdf");
+        fileChooser.setInitialFileName("relatorio_" + tipoRelatorio + "_" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ".pdf");
         File file = fileChooser.showSaveDialog(new Stage());
-
         if (file != null) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(pdfBytes);
@@ -253,6 +401,29 @@ public class ApplicationFX extends Application {
                 mostrarMensagem("Erro!", "Não foi possível salvar o PDF.");
             }
         }
+    }
+
+    @FXML
+    public void pesquisarProdutos(ActionEvent event) {
+        carregarProdutos();
+    }
+
+    private void carregarProdutos() {
+        Task<List<ItemDTO>> task = new Task<>() {
+            @Override
+            protected List<ItemDTO> call() {
+                return getProdutosPorNome();
+            }
+        };
+        task.setOnSucceeded(event -> listaProdutos.setAll(task.getValue()));
+        new Thread(task).start();
+    }
+
+    private List<ItemDTO> getProdutosPorNome() {
+        String nomeProduto = getNome(nomeProdutoTextField);
+        String dataInicioFormatada = parseDateToString(dataInicioProduto);
+        String dataFimFormatada = parseDateToString(dataFimProduto);
+        return itemService.listarItensPorNomeEPeriodo(nomeProduto, dataInicioFormatada, dataFimFormatada);
     }
 
     @FXML
@@ -272,10 +443,9 @@ public class ApplicationFX extends Application {
     }
 
     private List<CompraDTO> getComprasPorEstabelecimentoEPeriodo() {
-        String nomeEstabelecimento = getNomeEstabelecimento(nomeEstabelecimentoTextFieldPesquisaCompras);
+        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaCupons);
         String dataInicioFormatada = parseDateToString(dataInicioCompras);
         String dataFimFormatada = parseDateToString(dataFimCompras);
-
         return compraService.listarComprasPorEstabelecimentoEPeriodo(nomeEstabelecimento, dataInicioFormatada, dataFimFormatada);
     }
 
@@ -291,7 +461,7 @@ public class ApplicationFX extends Application {
     }
 
     private List<ItemDTO> getItensPorEstabelecimentoEPeriodo() {
-        String nomeEstabelecimento = getNomeEstabelecimento(nomeEstabelecimentoTextFieldPesquisa);
+        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaItens);
         String dataInicioFormatada = parseDateToString(dataInicio);
         String dataFimFormatada = parseDateToString(dataFim);
         return itemService.listarItensPorEstabelecimentoEPeriodo(nomeEstabelecimento, dataInicioFormatada, dataFimFormatada);
@@ -329,14 +499,12 @@ public class ApplicationFX extends Application {
     private Stage createSplashScreen() {
         Stage splashStage = new Stage();
         splashStage.initStyle(StageStyle.UNDECORATED);
-
         StackPane splashRoot = new StackPane();
         ImageView splashImage = new ImageView(new Image(getClass().getResource("/imagens/splash.png").toExternalForm()));
         splashImage.setFitWidth(SPLASH_SCREEN_WIDTH);
         splashImage.setFitHeight(SPLASH_SCREEN_HEIGHT);
         splashRoot.getChildren().add(splashImage);
         Scene splashScene = new Scene(splashRoot, SPLASH_SCREEN_WIDTH, SPLASH_SCREEN_HEIGHT);
-
         splashStage.setScene(splashScene);
         return splashStage;
     }
@@ -366,7 +534,7 @@ public class ApplicationFX extends Application {
 
     private void limparCampos() {
         fileNameTextField.clear();
-        nomeEstabelecimentoTextField.clear();
+        nomeEstabelecimentoCadastro.clear();
         file = null;
     }
 
@@ -375,13 +543,11 @@ public class ApplicationFX extends Application {
             mostrarAlerta(Alert.AlertType.WARNING, "Arquivo não selecionado", "Por favor, selecione um arquivo PDF antes de cadastrar.");
             return false;
         }
-
-        String nomeEstabelecimento = nomeEstabelecimentoTextField.getText().trim();
+        String nomeEstabelecimento = nomeEstabelecimentoCadastro.getText().trim();
         if (nomeEstabelecimento.isEmpty()) {
             mostrarAlerta(Alert.AlertType.WARNING, "Nome do Estabelecimento vazio", "Por favor, preencha o nome do estabelecimento.");
             return false;
         }
-
         return true;
     }
 
@@ -389,7 +555,22 @@ public class ApplicationFX extends Application {
         return Objects.isNull(datePicker.getValue()) ? null : datePicker.getValue().format(DateTimeFormatter.ISO_DATE);
     }
 
-    private String getNomeEstabelecimento(TextField textField) {
+    private String getNome(TextField textField) {
         return Strings.isBlank(textField.getText()) ? null : textField.getText();
+    }
+
+    private void excluirCompra(CompraDTO compra) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Excluir Cupom");
+        alert.setHeaderText(null);
+        alert.setContentText("Tem certeza de que deseja excluir este cupom ?");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                itemService.deleteByCompraId(compra.getId());
+                compraService.excluirCompraPorId(compra.getId());
+                listaCompras.remove(compra);
+                mostrarMensagem("Sucesso", "Cupom excluído com sucesso.");
+            }
+        });
     }
 }

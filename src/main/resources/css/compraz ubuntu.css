@@ -1,0 +1,151 @@
+.root {
+    -fx-base: #FFFFFF;
+    -fx-background: linear-gradient(to bottom, #FFFFFF 0%, #F3F3F3 100%);
+    -fx-font-family: "Noto Sans";
+    -fx-font-size: 12px;
+}
+
+/* Efeito de vidro translúcido (ajustado para um visual mais clean) */
+.glass-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-insets: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+/* Botão com paleta laranja inspirada no Ubuntu */
+.button {
+    -fx-background-color:
+        linear-gradient(to bottom, #FFCC80 0%, #FFA726 45%, #FB8C00 50%, #F57C00 100%);
+    -fx-text-fill: white;
+    -fx-background-radius: 4px;
+    -fx-border-color: #E95420;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px 15px;
+    -fx-effect: innershadow(three-pass-box, rgba(255,255,255,0.75), 2, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #FFF3E0 0%, #FFE0B2 45%, #FFCC80 100%);
+    -fx-border-color: #F57C00;
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #FB8C00 0%, #F57C00 100%);
+    -fx-padding: 6px 14px 4px 16px;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.text-field, .password-field, .text-area {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.text-field:focused {
+    -fx-border-color: #64B5F6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 3px;
+    -fx-background-insets: 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #F5F5F5;
+    -fx-border-color: #E0E0E0;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #FFFFFF;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+    -fx-text-fill: #333333;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: linear-gradient(to bottom, #D0D0D0 0%, #B0B0B0 100%);
+    -fx-background-insets: 2;
+    -fx-background-radius: 4px;
+    -fx-border-color: #A0A0A0;
+    -fx-border-width: 0.5px;
+}
+
+.menu-bar {
+    -fx-background-color: #F9F9F9;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-item {
+    -fx-background-color: #FFFFFF;
+}
+
+.menu-item:focused {
+    -fx-background-color: #E3F2FD;
+    -fx-text-fill: #333333;
+}
+
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #F9F9F9;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #64B5F6;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark, .radio-button:selected .dot {
+    -fx-background-color: #64B5F6;
+}
+
+.aero-reflex {
+    -fx-background-color: linear-gradient(to bottom,
+        rgba(255,255,255,0.3) 0%,
+        rgba(255,255,255,0.1) 20%,
+        rgba(255,255,255,0.0) 100%);
+}
+
+.title-bar {
+    -fx-background-color: linear-gradient(to bottom, #3B7DD8 0%, #3B7DD8 100%);
+    -fx-padding: 4px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}

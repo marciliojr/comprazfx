@@ -24,4 +24,8 @@ public class CompraService {
         return compraRepository.findByNomeEstabelecimentoDataCompraValorTotal(nomeEstabelecimento, dataInicio, dataFim);
     }
 
+    public void excluirCompraPorId(Long id) {
+        compraRepository.deleteById(id);
+    }
+
 }

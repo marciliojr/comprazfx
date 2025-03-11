@@ -1,0 +1,158 @@
+/* Cores da Juventus:
+   Branco: #FFFFFF
+   Preto:  #000000
+   Rosa:   #FF66CC
+*/
+
+.root {
+    -fx-base: #FFFFFF;
+    -fx-background: linear-gradient(to bottom, #FFFFFF 0%, #F0F0F0 100%);
+    -fx-font-family: "Noto Sans";
+    -fx-font-size: 12px;
+}
+
+/* Efeito de vidro translúcido */
+.glass-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-insets: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(0, 0, 0, 0.6);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+/* Botão com fundo Preto e detalhe em Rosa no hover */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 100%);
+    -fx-text-fill: #000000;
+    -fx-background-radius: 4px;
+    -fx-border-color: #000000;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px 15px;
+    -fx-effect: innershadow(three-pass-box, rgba(255,255,255,0.75), 2, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #FF66CC 0%, #FF66CC 100%);
+    -fx-border-color: #000000;
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #000000 0%, #000000 100%);
+    -fx-padding: 6px 14px 4px 16px;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.text-field, .password-field, .text-area {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.text-field:focused {
+    -fx-border-color: #FF66CC;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-radius: 3px;
+    -fx-background-insets: 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #000000;
+    -fx-border-color: #FF66CC;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #FFFFFF;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #F7F7F7; /* tonalidade bem clara */
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #FF66CC;
+    -fx-text-fill: #FFFFFF;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: linear-gradient(to bottom, #000000 0%, #FF66CC 100%);
+    -fx-background-insets: 2;
+    -fx-background-radius: 4px;
+    -fx-border-color: #000000;
+    -fx-border-width: 0.5px;
+}
+
+.menu-bar {
+    -fx-background-color: #000000;
+    -fx-border-color: #FF66CC;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-item {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #000000;
+}
+
+.menu-item:focused {
+    -fx-background-color: #FF66CC;
+    -fx-text-fill: #FFFFFF;
+}
+
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #FF66CC;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark, .radio-button:selected .dot {
+    -fx-background-color: #FF66CC;
+}
+
+.aero-reflex {
+    -fx-background-color: linear-gradient(to bottom,
+        rgba(255,255,255,0.3) 0%,
+        rgba(255,255,255,0.1) 20%,
+        rgba(255,255,255,0.0) 100%);
+}
+
+.title-bar {
+    -fx-background-color: linear-gradient(to bottom, #000000 0%, #FF66CC 100%);
+    -fx-padding: 4px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}

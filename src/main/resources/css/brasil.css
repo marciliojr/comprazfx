@@ -1,0 +1,157 @@
+/* Cores da Seleção Brasileira:
+   Amarelo: #FFCC29
+   Azul:    #0033A0
+   Branco:  #FFFFFF
+   Verde:   #009C3B
+*/
+
+.root {
+    -fx-base: #FFCC29;
+    -fx-background: linear-gradient(to bottom, #FFCC29 0%, #FFFFFF 100%);
+    -fx-font-family: "Noto Sans";
+    -fx-font-size: 12px;
+}
+
+/* Efeito de vidro translúcido */
+.glass-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-insets: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(0, 51, 160, 0.6); /* azul translúcido */
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+/* Botão com gradiente entre Azul e Verde */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #0033A0 0%, #009C3B 100%);
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 4px;
+    -fx-border-color: #FFCC29;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px 15px;
+    -fx-effect: innershadow(three-pass-box, rgba(255,255,255,0.75), 2, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #3355CC 0%, #33BB77 100%);
+    -fx-border-color: #FFCC29;
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #002280 0%, #007A33 100%);
+    -fx-padding: 6px 14px 4px 16px;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.text-field, .password-field, .text-area {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0033A0;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.text-field:focused {
+    -fx-border-color: #009C3B;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0033A0;
+    -fx-border-radius: 3px;
+    -fx-background-insets: 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #FFCC29;
+    -fx-border-color: #009C3B;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #FFFFFF;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #FFF8E1; /* tom muito claro de amarelo */
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #0033A0;
+    -fx-text-fill: #FFFFFF;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: linear-gradient(to bottom, #0033A0 0%, #009C3B 100%);
+    -fx-background-insets: 2;
+    -fx-background-radius: 4px;
+    -fx-border-color: #FFCC29;
+    -fx-border-width: 0.5px;
+}
+
+.menu-bar {
+    -fx-background-color: #FFCC29;
+    -fx-border-color: #0033A0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-item {
+    -fx-background-color: #FFFFFF;
+}
+
+.menu-item:focused {
+    -fx-background-color: #009C3B;
+    -fx-text-fill: #FFFFFF;
+}
+
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0033A0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #FFCC29;
+    -fx-border-color: #0033A0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #009C3B;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0033A0;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark, .radio-button:selected .dot {
+    -fx-background-color: #009C3B;
+}
+
+.aero-reflex {
+    -fx-background-color: linear-gradient(to bottom,
+        rgba(255,255,255,0.3) 0%,
+        rgba(255,255,255,0.1) 20%,
+        rgba(255,255,255,0.0) 100%);
+}
+
+.title-bar {
+    -fx-background-color: linear-gradient(to bottom, #0033A0 0%, #009C3B 100%);
+    -fx-padding: 4px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}

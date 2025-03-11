@@ -376,7 +376,7 @@ public class ApplicationFX extends Application {
 
     @FXML
     public void gerarPDFProduto(ActionEvent event) throws IOException {
-        byte[] pdfBytes = pdfGeradorProdutos.generatePDF(new ArrayList<>(listaItens));
+        byte[] pdfBytes = pdfGeradorProdutos.generatePDF(new ArrayList<>(listaProdutos));
         if (pdfBytes == null || pdfBytes.length == 0) {
             mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
             return;

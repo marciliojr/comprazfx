@@ -182,15 +182,26 @@
                                         <DatePicker fx:id="dataFimProduto"/>
                                     </children>
                                 </HBox>
-                                <Button mnemonicParsing="false" onAction="#pesquisarProdutos" text="Pesquisar">
-                                    <graphic>
-                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
-                                            <image>
-                                                <Image url="@/imagens/pesquisar.png"/>
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
+                                <HBox spacing="10.0">
+                                    <Button mnemonicParsing="false" onAction="#pesquisarProdutos" text="Pesquisar">
+                                        <graphic>
+                                            <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                                <image>
+                                                    <Image url="@/imagens/pesquisar.png"/>
+                                                </image>
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#gerarPDFProduto" text="Gerar PDF">
+                                        <graphic>
+                                            <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                                <image>
+                                                    <Image url="@/imagens/print.png"/>
+                                                </image>
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                </HBox>
                                 <TableView fx:id="tabelaProduto" VBox.vgrow="ALWAYS">
                                     <columns>
                                         <TableColumn fx:id="colunaNomeProduto" text="Produto"/>

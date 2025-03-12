@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" prefHeight="635.0" prefWidth="937.0"
-         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/23.0.1"
+         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17.0.12"
          fx:controller="com.marciliojr.comprazfx.ApplicationFX">
     <tabs>
         <Tab fx:id="abaCadastro" text="Cadastrar Cupom">
@@ -35,7 +35,7 @@
                                 <Button fx:id="carregarPdfButton" mnemonicParsing="false" onAction="#carregarPdf"
                                         text="Carregar PDF Cupom">
                                     <graphic>
-                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                             <image>
                                                 <Image url="@/imagens/pdf.png"/>
                                             </image>
@@ -45,7 +45,7 @@
                                 <TextField fx:id="fileNameTextField" HBox.hgrow="ALWAYS"/>
                                 <Button mnemonicParsing="false" onAction="#cadastrar" text="Cadastrar">
                                     <graphic>
-                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                             <image>
                                                 <Image url="@/imagens/salvar.png"/>
                                             </image>
@@ -81,7 +81,7 @@
                             <HBox spacing="10.0">
                                 <Button mnemonicParsing="false" onAction="#pesquisar" text="Pesquisar">
                                     <graphic>
-                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                             <image>
                                                 <Image url="@/imagens/pesquisar.png"/>
                                             </image>
@@ -90,7 +90,7 @@
                                 </Button>
                                 <Button mnemonicParsing="false" onAction="#gerarPDF" text="Gerar PDF">
                                     <graphic>
-                                        <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                             <image>
                                                 <Image url="@/imagens/print.png"/>
                                             </image>
@@ -143,7 +143,7 @@
 
                             <Button mnemonicParsing="false" onAction="#pesquisarCompras" text="Pesquisar">
                                 <graphic>
-                                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                         <image>
                                             <Image url="@/imagens/pesquisar.png"/>
                                         </image>
@@ -185,7 +185,7 @@
                                 <HBox spacing="10.0">
                                     <Button mnemonicParsing="false" onAction="#pesquisarProdutos" text="Pesquisar">
                                         <graphic>
-                                            <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                                 <image>
                                                     <Image url="@/imagens/pesquisar.png"/>
                                                 </image>
@@ -194,7 +194,7 @@
                                     </Button>
                                     <Button mnemonicParsing="false" onAction="#gerarPDFProduto" text="Gerar PDF">
                                         <graphic>
-                                            <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                            <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
                                                 <image>
                                                     <Image url="@/imagens/print.png"/>
                                                 </image>
@@ -223,6 +223,14 @@
                     <Button fx:id="buttonAplicar" layoutX="250.0" layoutY="43.0" onAction="#aplicarEstilo"
                             text="Aplicar"/>
                     <Label layoutX="30.0" layoutY="14.0" text="Temas:"/>
+                    <Button layoutX="30.0" layoutY="152.0" mnemonicParsing="false" onAction="#acaoBotaoNormalizar"
+                            text="Executar normalização">
+                        <tooltip>
+                            <Tooltip
+                                    text="Esse Botão altera o nome de todos os produtos tentanto modificar abreviações para o nome completo."/>
+                        </tooltip>
+                    </Button>
+                    <Label layoutX="30.0" layoutY="110.0" text="Normalizar Nomes:"/>
                 </children>
             </AnchorPane>
         </Tab>

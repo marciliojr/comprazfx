@@ -1,5 +1,7 @@
 package com.marciliojr.comprazfx.service;
 
+import com.marciliojr.comprazfx.infra.ItemNormalizer;
+import com.marciliojr.comprazfx.model.Item;
 import com.marciliojr.comprazfx.model.dto.ItemDTO;
 import com.marciliojr.comprazfx.repository.ItemRepository;
 import org.apache.logging.log4j.util.Strings;
@@ -52,5 +54,14 @@ public class ItemService {
     public void deleteByCompraId(Long compraId) {
         itemRepository.deleteByCompraId(compraId);
     }
+
+    public void normalizarNomes() {
+        List<Item> all = itemRepository.findAll();
+        ItemNormalizer.normalizarNomes(all);
+        for (Item item : all) {
+            itemRepository.save(item);
+        }
+    }
+
 
 }

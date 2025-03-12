@@ -449,6 +449,26 @@ public class ApplicationFX extends Application {
         return compraService.listarComprasPorEstabelecimentoEPeriodo(nomeEstabelecimento, dataInicioFormatada, dataFimFormatada);
     }
 
+    @FXML
+    public void acaoBotaoNormalizar(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Normalizar nomes de Produtos?");
+        alert.setHeaderText(null);
+        alert.setContentText("Tem certeza de que deseja Normalizar todos os nomes de produtos ja cadastrados? Essa Ação não pode ser desfeita.");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    itemService.normalizarNomes();
+                    mostrarMensagem("Sucesso", "Nomes dos produtos foram normalizados com sucesso.");
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro ao normalizar", "Ocorreu um erro ao tentar normalizar os dados: " + e.getMessage());
+                }
+            }
+        });
+
+
+    }
+
     private void carregarItens() {
         Task<List<ItemDTO>> task = new Task<>() {
             @Override

@@ -14,6 +14,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -208,6 +209,8 @@ public class ApplicationFX extends Application {
         TextFields.bindAutoCompletion(nomeEstabelecimentoCadastro, nomesEstabelecimentos);
         TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaItens, nomesEstabelecimentos);
         TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaCupons, nomesEstabelecimentos);
+
+        // Configurar menu de contexto para tabela de compras
         tabelaCompras.setRowFactory(tv -> {
             TableRow<CompraDTO> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
@@ -222,12 +225,31 @@ public class ApplicationFX extends Application {
             });
             return row;
         });
+
+        // Configurar menu de contexto para tabela de produtos
+        tabelaProduto.setRowFactory(tv -> {
+            TableRow<ItemDTO> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem editItem = new MenuItem("Alterar");
+            MenuItem deleteItem = new MenuItem("Excluir");
+            editItem.setOnAction(event -> abrirTelaEdicao(row.getItem()));
+            deleteItem.setOnAction(event -> excluirItem(row.getItem()));
+            contextMenu.getItems().addAll(editItem, deleteItem);
+            row.contextMenuProperty().bind(javafx.beans.binding.Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(contextMenu));
+            row.setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY && !row.isEmpty()) {
+                    contextMenu.show(row, event.getScreenX(), event.getScreenY());
+                }
+            });
+            return row;
+        });
+
         carregarListaCss();
         carregarComboTipoCupom();
         tipoCupomComboItens.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
         tipoCupomComboCupons.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
         tipoCupomComboProdutos.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
-        
+
         // Definir TODOS como valor padrão
         tipoCupomComboItens.setValue(TipoCupom.TODOS);
         tipoCupomComboCupons.setValue(TipoCupom.TODOS);
@@ -630,5 +652,49 @@ public class ApplicationFX extends Application {
     private TipoCupom getTipoCupomSelecionado(ComboBox<TipoCupom> combo) {
         TipoCupom valor = combo.getValue();
         return valor == null || valor == TipoCupom.TODOS ? null : valor;
+    }
+
+    @FXML
+    private void abrirTelaEdicao(ItemDTO item) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("editar-item.fxml"));
+
+            loader.setControllerFactory(SpringBootApp.context::getBean);
+
+            Parent root = loader.load();
+
+            EditarItemController controller = loader.getController();
+            controller.setItem(item);
+            controller.setCallback(() -> {
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Item atualizado com sucesso! Atualize a pesquisa.");
+                pesquisarProdutos(null);
+            });
+
+            Stage stage = new Stage();
+            stage.setTitle("Editar Item");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void excluirItem(ItemDTO item) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Excluir Item");
+        alert.setHeaderText(null);
+        alert.setContentText("Tem certeza de que deseja excluir este item?");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    itemService.deleteById(item.getId());
+                    listaProdutos.remove(item);
+                    mostrarMensagem("Sucesso", "Item excluído com sucesso.");
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao excluir item: " + e.getMessage());
+                }
+            }
+        });
     }
 }

@@ -59,6 +59,19 @@ public class ItemService {
         itemRepository.deleteByCompraId(compraId);
     }
 
+    public void atualizarItem(ItemDTO itemDTO) {
+        Item item = itemRepository.findById(itemDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+        
+        item.setNome(itemDTO.getNome());
+        item.setQuantidade(itemDTO.getQuantidade());
+        item.setUnidade(itemDTO.getUnidade());
+        item.setValorUnitario(itemDTO.getValorUnitario());
+        item.setValorTotal(itemDTO.getValorTotal());
+        
+        itemRepository.save(item);
+    }
+
     public void normalizarNomes() {
         List<Item> all = itemRepository.findAll();
         ItemNormalizer.normalizarNomes(all);

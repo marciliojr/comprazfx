@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
+      fx:controller="com.marciliojr.comprazfx.EditarItemController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+    <Label text="Nome:"/>
+    <TextField fx:id="nomeTextField" maxWidth="Infinity"/>
+
+    <Label text="Quantidade:"/>
+    <TextField fx:id="quantidadeTextField" maxWidth="Infinity"/>
+
+    <Label text="Valor Unitário:"/>
+    <TextField fx:id="valorUnitarioTextField" maxWidth="Infinity"/>
+
+    <Label text="Valor Total:"/>
+    <TextField fx:id="valorTotalTextField" maxWidth="Infinity"/>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button onAction="#salvar" text="Salvar"/>
+        <Button onAction="#cancelar" text="Cancelar"/>
+    </HBox>
+</VBox>

@@ -58,7 +58,6 @@ public class ApplicationFX extends Application {
     private final ObservableList<ItemDTO> listaProdutos = FXCollections.observableArrayList();
     private final ItemService itemService = SpringBootApp.context.getBean(ItemService.class);
     private final PDFDadosService pdfDadosService = SpringBootApp.context.getBean(PDFDadosService.class);
-    private final PDFGeradorItensCupom pdfGeradorItensCupom = SpringBootApp.context.getBean(PDFGeradorItensCupom.class);
     private final PDFGeradorProdutos pdfGeradorProdutos = SpringBootApp.context.getBean(PDFGeradorProdutos.class);
     private final CompraService compraService = SpringBootApp.context.getBean(CompraService.class);
     private final EstabelecimentoService estabelecimentoService = SpringBootApp.context.getBean(EstabelecimentoService.class);
@@ -208,7 +207,6 @@ public class ApplicationFX extends Application {
         TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaProdutos, nomesEstabelecimentos);
         TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaCupons, nomesEstabelecimentos);
 
-        // Configurar menu de contexto para tabela de compras
         tabelaCompras.setRowFactory(tv -> {
             TableRow<CompraDTO> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
@@ -224,7 +222,6 @@ public class ApplicationFX extends Application {
             return row;
         });
 
-        // Configurar menu de contexto para tabela de produtos
         tabelaProduto.setRowFactory(tv -> {
             TableRow<ItemDTO> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
@@ -384,20 +381,11 @@ public class ApplicationFX extends Application {
         pdfDadosService.processarDadosEPersistir(pdfString, nomeEstabelecimentoCadastro.getText(), parseDate(dataCadastro.getValue().toString()), comboTipoCupom.getValue());
     }
 
-    @FXML
-    public void gerarPDF(ActionEvent event) throws IOException {
-        BigDecimal somatorio = getSomatorio();
-        byte[] pdfBytes = pdfGeradorItensCupom.generatePDF(new ArrayList<>(listaItens), somatorio.toString());
-        if (pdfBytes == null || pdfBytes.length == 0) {
-            mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
-            return;
-        }
-        montarRelatorioPDF(pdfBytes, "itens");
-    }
 
     @FXML
     public void gerarPDFProduto(ActionEvent event) throws IOException {
-        byte[] pdfBytes = pdfGeradorProdutos.generatePDF(new ArrayList<>(listaProdutos));
+        BigDecimal somatorio = getSomatorio();
+        byte[] pdfBytes = pdfGeradorProdutos.generatePDF(new ArrayList<>(listaProdutos), somatorio.toString());
         if (pdfBytes == null || pdfBytes.length == 0) {
             mostrarMensagem("Erro!", "O servidor não retornou um arquivo válido.");
             return;
@@ -408,8 +396,8 @@ public class ApplicationFX extends Application {
     private BigDecimal getSomatorio() {
         String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaProdutos);
         TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
-        String dataInicioFormatada = parseDateToString(dataInicioItens);
-        String dataFimFormatada = parseDateToString(dataFimItens);
+        String dataInicioFormatada = parseDateToString(dataInicioProdutos);
+        String dataFimFormatada = parseDateToString(dataFimProdutos);
         return itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicioFormatada, dataFimFormatada);
     }
 

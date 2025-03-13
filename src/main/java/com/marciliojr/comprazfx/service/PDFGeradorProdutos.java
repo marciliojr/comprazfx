@@ -1,5 +1,6 @@
 package com.marciliojr.comprazfx.service;
 
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -14,64 +15,63 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class PDFGeradorProdutos {
 
-    public byte[] generatePDF(List<ItemDTO> items) throws IOException {
+    public byte[] generatePDF(List<ItemDTO> items, String valorSomatorio) throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(outputStream);
             PdfDocument pdfDocument = new PdfDocument(writer);
             Document document = new Document(pdfDocument, PageSize.A4);
 
-            Paragraph header = new Paragraph("Relatorio de produtos")
-                    .setTextAlignment(TextAlignment.CENTER);
-            document.add(header);
+            document.add(new Paragraph("Relatório de Compras")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(18)
+                    .simulateBold()
+                    .setMarginBottom(20));
 
-            Paragraph dashedLine = new Paragraph("------------------------------------------------")
-                    .setTextAlignment(TextAlignment.CENTER);
-            document.add(dashedLine);
-
-            float[] columnWidths = {4, 1, 2, 2};
-            Table table = new Table(columnWidths);
+            Table table = new Table(new float[]{4, 1.5f, 2.5f, 2.5f, 3});
             table.setWidth(UnitValue.createPercentValue(100));
 
-            table.addHeaderCell(new Cell().add(new Paragraph("Produto")).setBorder(null));
-            table.addHeaderCell(new Cell().add(new Paragraph("Qtd")).setBorder(null).setTextAlignment(TextAlignment.CENTER));
-            table.addHeaderCell(new Cell().add(new Paragraph("Valor Unit.")).setBorder(null).setTextAlignment(TextAlignment.RIGHT));
-            table.addHeaderCell(new Cell().add(new Paragraph("Total")).setBorder(null).setTextAlignment(TextAlignment.RIGHT));
-
-            double subtotal = 0.0;
-            DecimalFormat df = new DecimalFormat("0.00");
+            table.addHeaderCell(new Cell().add(new Paragraph("Nome do Item").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Quantidade").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Valor Unitário").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Valor Total").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Estabelecimento").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
 
             for (ItemDTO item : items) {
-                table.addCell(new Cell().add(new Paragraph(item.getNome())).setBorder(null));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(item.getQuantidade())))
-                        .setBorder(null)
-                        .setTextAlignment(TextAlignment.CENTER));
-                table.addCell(new Cell().add(new Paragraph("R$ " + df.format(item.getValorUnitario())))
-                        .setBorder(null)
-                        .setTextAlignment(TextAlignment.RIGHT));
-                table.addCell(new Cell().add(new Paragraph("R$ " + df.format(item.getValorTotal())))
-                        .setBorder(null)
-                        .setTextAlignment(TextAlignment.RIGHT));
-                subtotal += item.getValorTotal().doubleValue();
+                table.addCell(new Cell().add(new Paragraph(item.getNome())));
+                table.addCell(new Cell().add(new Paragraph(item.getQuantidade().toString())));
+                table.addCell(new Cell().add(new Paragraph("R$ " + item.getValorUnitario())));
+                table.addCell(new Cell().add(new Paragraph("R$ " + item.getValorTotal())));
+                table.addCell(new Cell().add(new Paragraph(item.getNomeEstabelecimento())));
             }
+
             document.add(table);
 
-            document.add(new Paragraph("------------------------------------------------").setTextAlignment(TextAlignment.CENTER));
+            Paragraph total = new Paragraph("Valor Total das Compras: R$ " + valorSomatorio)
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .simulateBold()
+                    .setFontSize(12)
+                    .setFontColor(ColorConstants.RED)
+                    .setMarginTop(20);
 
-            Paragraph subtotalParagraph = new Paragraph(String.format("Subtotal:%34s", "R$ " + df.format(subtotal)));
-            document.add(subtotalParagraph);
+            document.add(total);
 
-            Paragraph thankYou = new Paragraph("     ComprazFX!")
-                    .setTextAlignment(TextAlignment.CENTER);
-            document.add(thankYou);
+            Paragraph date = new Paragraph("Gerado em: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setFontSize(10)
+                    .simulateItalic();
+
+            document.add(date);
 
             document.close();
             return outputStream.toByteArray();
         }
     }
+
 }

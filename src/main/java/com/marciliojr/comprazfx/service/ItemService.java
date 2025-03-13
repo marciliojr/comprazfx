@@ -43,6 +43,10 @@ public class ItemService {
         return itemRepository.findAllItemsByEstabelecimentoAndPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
     }
 
+    public List<ItemDTO> listarItensPorCompraId(Long compraId) {
+        return itemRepository.findByCompraId(compraId);
+    }
+
     public BigDecimal somarValorUnitarioPorEstabelecimentoEPeriodo(String nomeEstabelecimento, TipoCupom tipoCupom, String dataInicio, String dataFim) {
         return itemRepository.sumValorTotalByEstabelecimentoAndPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
     }

@@ -1,0 +1,92 @@
+.root {
+    -fx-base: #ECE9D8;
+    -fx-background: linear-gradient(to bottom, #ECE9D8 0%, #D4D0C8 100%);
+    -fx-font-family: \"Noto Sans\";
+    -fx-font-size: 12px;
+}
+
+.glass-pane {
+    -fx-background-color: rgba(236, 233, 216, 0.4);
+    -fx-background-insets: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(63, 93, 56, 0.6);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #ECE9D8 0%, #D4D0C8 100%);
+    -fx-text-fill: #000000;
+    -fx-background-radius: 4px;
+    -fx-border-color: #7F9D6F;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px 15px;
+    -fx-effect: innershadow(three-pass-box, rgba(255,255,255,0.75), 2, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #A5AC7A 0%, #7F9D6F 100%);
+    -fx-border-color: #4F5D3D;
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #4F5D3D 0%, #3F4931 100%);
+    -fx-padding: 6px 14px 4px 16px;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.text-field, .combo-box, .password-field, .text-area {
+    -fx-border-color: #000000;
+}
+
+.text-field:focused {
+    -fx-border-color: #000000;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.table-view .column-header {
+    -fx-background-color: #D4D0C8;
+    -fx-text-fill: #000000;
+    -fx-border-color: #7F9D6F;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #7F9D6F;
+    -fx-text-fill: #FFFFFF;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: linear-gradient(to bottom, #A5AC7A 0%, #7F9D6F 100%);
+    -fx-background-insets: 2;
+    -fx-background-radius: 4px;
+    -fx-border-color: #4F5D3D;
+    -fx-border-width: 0.5px;
+}
+
+.menu-bar {
+    -fx-background-color: #4F5D3D;
+    -fx-border-color: #7F9D6F;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-item:focused {
+    -fx-background-color: #7F9D6F;
+    -fx-text-fill: #FFFFFF;
+}
+
+.combo-box:focused {
+    -fx-border-color: #000000;
+}
+
+.check-box:selected .mark, .radio-button:selected .dot {
+    -fx-background-color: #7F9D6F;
+}
+
+.title-bar {
+    -fx-background-color: linear-gradient(to bottom, #4F5D3D 0%, #7F9D6F 100%);
+    -fx-padding: 4px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}

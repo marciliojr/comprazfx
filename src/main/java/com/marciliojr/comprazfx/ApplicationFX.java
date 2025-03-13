@@ -23,6 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -164,9 +165,11 @@ public class ApplicationFX extends Application {
         tabelaCompras.setRowFactory(tv -> {
             TableRow<CompraDTO> row = new TableRow<>();
             ContextMenu contextMenu = new ContextMenu();
+            MenuItem viewItem = new MenuItem("Visualizar Cupom");
             MenuItem deleteItem = new MenuItem("Deletar Cupom");
+            viewItem.setOnAction(event -> visualizarCupom(row.getItem()));
             deleteItem.setOnAction(event -> excluirCompra(row.getItem()));
-            contextMenu.getItems().addAll(deleteItem);
+            contextMenu.getItems().addAll(viewItem, deleteItem);
             row.contextMenuProperty().bind(javafx.beans.binding.Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(contextMenu));
             row.setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY && !row.isEmpty()) {
@@ -529,5 +532,24 @@ public class ApplicationFX extends Application {
                 }
             }
         });
+    }
+
+    private void visualizarCupom(CompraDTO compra) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("visualizar-cupom.fxml"));
+            Parent root = loader.load();
+            
+            VisualizarCupomController controller = loader.getController();
+            controller.setCompra(compra);
+            
+            Stage stage = new Stage();
+            stage.setTitle("Visualizar Cupom - " + compra.getNomeEstabelecimento());
+            stage.setScene(new Scene(root));
+            controller.setStage(stage);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao abrir visualização", "Ocorreu um erro ao tentar abrir a visualização do cupom: " + e.getMessage());
+        }
     }
 }

@@ -79,4 +79,14 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Transactional
     @Query("DELETE FROM Item i WHERE i.compra.id = :compraId")
     void deleteByCompraId(@Param("compraId") Long compraId);
+
+    @Query("SELECT new com.marciliojr.comprazfx.model.dto.ItemDTO(" +
+            "i.id, i.nome, i.quantidade, i.unidade, i.valorTotal, i.valorUnitario, " +
+            "c.dataCompra, e.nomeEstabelecimento) " +
+            "FROM Item i " +
+            "JOIN i.compra c " +
+            "JOIN c.estabelecimento e " +
+            "WHERE c.id = :compraId " +
+            "ORDER BY i.nome")
+    List<ItemDTO> findByCompraId(@Param("compraId") Long compraId);
 }

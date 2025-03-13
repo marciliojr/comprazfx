@@ -39,8 +39,8 @@ public class PDFGeradorProdutos {
 
             table.addHeaderCell(new Cell().add(new Paragraph("Nome do Item").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
             table.addHeaderCell(new Cell().add(new Paragraph("Quantidade").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
-            table.addHeaderCell(new Cell().add(new Paragraph("Valor Unitário").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
-            table.addHeaderCell(new Cell().add(new Paragraph("Valor Total").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Vl.Unitário").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Vl.Total").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
             table.addHeaderCell(new Cell().add(new Paragraph("Estabelecimento").simulateBold().setBackgroundColor(ColorConstants.LIGHT_GRAY)));
 
             for (ItemDTO item : items) {

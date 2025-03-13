@@ -53,8 +53,7 @@ public class Estabelecimento {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Estabelecimento)) return false;
-        Estabelecimento that = (Estabelecimento) o;
+        if (!(o instanceof Estabelecimento that)) return false;
         return Objects.equals(id, that.id) &&
                 Objects.equals(nomeEstabelecimento, that.nomeEstabelecimento) &&
                 tipoCupom == that.tipoCupom;

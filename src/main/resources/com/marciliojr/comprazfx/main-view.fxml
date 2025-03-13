@@ -145,9 +145,11 @@
                                 <TableView fx:id="tabelaProduto" VBox.vgrow="ALWAYS">
                                     <columns>
                                         <TableColumn fx:id="colunaNomeProduto" text="Nome" prefWidth="200"/>
-                                        <TableColumn fx:id="colunaNomeEstabelecimentoProduto" text="Estabelecimento" prefWidth="150"/>
+                                        <TableColumn fx:id="colunaNomeEstabelecimentoProduto" text="Estabelecimento"
+                                                     prefWidth="150"/>
                                         <TableColumn fx:id="colunaDataProduto" text="Data" prefWidth="100"/>
-                                        <TableColumn fx:id="colunaValorTotalProduto" text="Valor Total" prefWidth="100"/>
+                                        <TableColumn fx:id="colunaValorTotalProduto" text="Valor Total"
+                                                     prefWidth="100"/>
                                     </columns>
                                 </TableView>
                             </children>

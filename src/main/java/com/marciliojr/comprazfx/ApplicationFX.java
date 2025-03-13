@@ -38,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -49,11 +48,9 @@ import static com.marciliojr.comprazfx.infra.ComprazUtils.parseDate;
 public class ApplicationFX extends Application {
     private static final Logger logger = LogManager.getLogger(ApplicationFX.class);
     private static final String APP_TITLE = "ComprazFx - Gestor compras por cupom fiscal";
-    private static final String ERROR_MSG = "Erro ao carregar total";
     private static final int SPLASH_SCREEN_WIDTH = 800;
     private static final int SPLASH_SCREEN_HEIGHT = 600;
     private static final int SPLASH_SCREEN_DISPLAY_TIME = 3000;
-    private final ObservableList<ItemDTO> listaItens = FXCollections.observableArrayList();
     private final ObservableList<CompraDTO> listaCompras = FXCollections.observableArrayList();
     private final ObservableList<ItemDTO> listaProdutos = FXCollections.observableArrayList();
     private final ItemService itemService = SpringBootApp.context.getBean(ItemService.class);
@@ -61,7 +58,6 @@ public class ApplicationFX extends Application {
     private final PDFGeradorProdutos pdfGeradorProdutos = SpringBootApp.context.getBean(PDFGeradorProdutos.class);
     private final CompraService compraService = SpringBootApp.context.getBean(CompraService.class);
     private final EstabelecimentoService estabelecimentoService = SpringBootApp.context.getBean(EstabelecimentoService.class);
-    private Scene scene;
     private String currentUserCSS;
     @FXML
     private Button carregarPdfButton;
@@ -76,8 +72,6 @@ public class ApplicationFX extends Application {
     @FXML
     private TextField nomeProdutoTextField;
     @FXML
-    private TableView<ItemDTO> tabelaItens;
-    @FXML
     private TableView<CompraDTO> tabelaCompras;
     @FXML
     private TableView<ItemDTO> tabelaProduto;
@@ -90,29 +84,11 @@ public class ApplicationFX extends Application {
     @FXML
     private TableColumn<ItemDTO, String> colunaValorTotalProduto;
     @FXML
-    private TableColumn<ItemDTO, String> colunaNome;
-    @FXML
-    private TableColumn<ItemDTO, BigDecimal> colunaQuantidade;
-    @FXML
-    private TableColumn<ItemDTO, String> colunaUnidade;
-    @FXML
-    private TableColumn<ItemDTO, BigDecimal> colunaValor;
-    @FXML
-    private TableColumn<ItemDTO, BigDecimal> colunaValorTotal;
-    @FXML
-    private TableColumn<ItemDTO, String> colunaEstabelecimento;
-    @FXML
-    private TableColumn<ItemDTO, BigDecimal> colunaDataCompra;
-    @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaValorTotalCompra;
     @FXML
     private TableColumn<ItemDTO, String> colunaEstabelecimentoCompra;
     @FXML
     private TableColumn<ItemDTO, BigDecimal> colunaDataCompraCompra;
-    @FXML
-    private DatePicker dataInicioItens;
-    @FXML
-    private DatePicker dataFimItens;
     @FXML
     private DatePicker dataInicioCupons;
     @FXML
@@ -122,35 +98,13 @@ public class ApplicationFX extends Application {
     @FXML
     private DatePicker dataFimProdutos;
     @FXML
-    private Label somatorioValorItem;
-    @FXML
-    private DatePicker dataInicioCompras;
-    @FXML
-    private DatePicker dataFimCompras;
-    @FXML
-    private DatePicker dataInicioProduto;
-    @FXML
-    private DatePicker dataFimProduto;
-    @FXML
     private ComboBox<String> comboBoxCss;
     @FXML
     private ComboBox<TipoCupom> comboTipoCupom;
     @FXML
-    private Button buttonAplicar;
-    @FXML
-    private Tab abaItensCupons;
-    @FXML
-    private Tab abaCadastro;
-    @FXML
-    private Tab abaCupons;
-    @FXML
-    private ComboBox<TipoCupom> tipoCupomComboItens;
-    @FXML
     private ComboBox<TipoCupom> tipoCupomComboCupons;
     @FXML
     private DatePicker dataCadastro;
-    @FXML
-    private ComboBox<TipoCupom> comboCupom;
     @FXML
     private ComboBox<TipoCupom> tipoCupomComboProdutos;
     private File file;
@@ -302,10 +256,6 @@ public class ApplicationFX extends Application {
         return valorPadrao;
     }
 
-    public void setScene(Scene scene) {
-        this.scene = scene;
-    }
-
     private void carregarListaCss() {
         try {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -332,22 +282,6 @@ public class ApplicationFX extends Application {
         colunaNomeEstabelecimentoProduto.setCellValueFactory(new PropertyValueFactory<>("nomeEstabelecimento"));
         colunaDataProduto.setCellValueFactory(new PropertyValueFactory<>("dataCompraFormatada"));
         colunaValorTotalProduto.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
-    }
-
-    private void configuraTabelaAbaItens() {
-        colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colunaQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-        colunaUnidade.setCellValueFactory(new PropertyValueFactory<>("unidade"));
-        colunaValor.setCellValueFactory(new PropertyValueFactory<>("valorUnitario"));
-        colunaValorTotal.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
-        colunaEstabelecimento.setCellValueFactory(new PropertyValueFactory<>("nomeEstabelecimento"));
-        colunaDataCompra.setCellValueFactory(new PropertyValueFactory<>("dataCompraFormatada"));
-    }
-
-    @FXML
-    private void pesquisar(ActionEvent event) {
-        carregarItens();
-        carregarValorSomatorio();
     }
 
     @FXML
@@ -470,54 +404,6 @@ public class ApplicationFX extends Application {
         });
     }
 
-    private void carregarItens() {
-        Task<List<ItemDTO>> task = new Task<>() {
-            @Override
-            protected List<ItemDTO> call() {
-                return getItensPorEstabelecimentoEPeriodo();
-            }
-        };
-        task.setOnSucceeded(event -> listaItens.setAll(task.getValue()));
-        new Thread(task).start();
-    }
-
-    private List<ItemDTO> getItensPorEstabelecimentoEPeriodo() {
-        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaProdutos);
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
-        String dataInicioFormatada = parseDateToString(dataInicioItens);
-        String dataFimFormatada = parseDateToString(dataFimItens);
-        return itemService.listarItensPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicioFormatada, dataFimFormatada);
-    }
-
-    private void carregarValorSomatorio() {
-        Task<BigDecimal> task = new Task<>() {
-            @Override
-            protected BigDecimal call() {
-                return getSomatorio();
-            }
-        };
-        task.setOnSucceeded(event -> atualizarSomatorioLabel(task.getValue().toString()));
-        new Thread(task).start();
-    }
-
-    private void atualizarSomatorioLabel(String valorString) {
-        Platform.runLater(() -> {
-            try {
-                somatorioValorItem.setText("R$ " + configurarSomatorio(valorString));
-            } catch (Exception e) {
-                somatorioValorItem.setText(ERROR_MSG);
-                logger.error("Erro ao converter resposta", e);
-            }
-        });
-    }
-
-    private String configurarSomatorio(String valorString) {
-        BigDecimal somatorio = new BigDecimal(valorString);
-        NumberFormat formatoMoeda = NumberFormat.getInstance(new Locale("pt", "BR"));
-        formatoMoeda.setMinimumFractionDigits(2);
-        return formatoMoeda.format(somatorio);
-    }
-
     private Stage createSplashScreen() {
         Stage splashStage = new Stage();
         splashStage.initStyle(StageStyle.UNDECORATED);
@@ -594,40 +480,6 @@ public class ApplicationFX extends Application {
                 mostrarMensagem("Sucesso", "Cupom excluído com sucesso.");
             }
         });
-    }
-
-    @FXML
-    private void atualizarTotalItens() {
-        String nomeEstabelecimento = nomeEstabelecimentoPesquisaProdutos.getText();
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
-        String dataInicio = dataInicioItens.getValue() != null ? dataInicioItens.getValue().toString() : null;
-        String dataFim = dataFimItens.getValue() != null ? dataFimItens.getValue().toString() : null;
-
-        BigDecimal total = itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
-        somatorioValorItem.setText(NumberFormat.getCurrencyInstance().format(total));
-    }
-
-    @FXML
-    private void pesquisarItens(ActionEvent event) {
-        String nomeEstabelecimento = nomeEstabelecimentoPesquisaProdutos.getText();
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
-        String dataInicio = dataInicioItens.getValue() != null ? dataInicioItens.getValue().toString() : null;
-        String dataFim = dataFimItens.getValue() != null ? dataFimItens.getValue().toString() : null;
-
-        listaItens.clear();
-        listaItens.addAll(itemService.listarItensPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim));
-        atualizarTotalItens();
-    }
-
-    @FXML
-    private void pesquisarCupons(ActionEvent event) {
-        String nomeEstabelecimento = nomeEstabelecimentoPesquisaCupons.getText();
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboCupons);
-        String dataInicio = dataInicioCupons.getValue() != null ? dataInicioCupons.getValue().toString() : null;
-        String dataFim = dataFimCupons.getValue() != null ? dataFimCupons.getValue().toString() : null;
-
-        listaCompras.clear();
-        listaCompras.addAll(compraService.listarComprasPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim));
     }
 
     private TipoCupom getTipoCupomSelecionado(ComboBox<TipoCupom> combo) {

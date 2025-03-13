@@ -23,10 +23,4 @@ public class ComprazUtils {
                 .orElse(null);
     }
 
-    public static String sanitizeString(String value) {
-        return Optional.ofNullable(value)
-                .map(String::trim)
-                .filter(s -> !s.isEmpty() && !"null".equalsIgnoreCase(s))
-                .orElse(null);
-    }
 }

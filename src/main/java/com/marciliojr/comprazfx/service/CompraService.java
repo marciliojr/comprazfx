@@ -1,5 +1,6 @@
 package com.marciliojr.comprazfx.service;
 
+import com.marciliojr.comprazfx.model.TipoCupom;
 import com.marciliojr.comprazfx.model.dto.CompraDTO;
 import com.marciliojr.comprazfx.repository.CompraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public class CompraService {
         this.compraRepository = compraRepository;
     }
 
-    public List<CompraDTO> listarComprasPorEstabelecimentoEPeriodo(String nomeEstabelecimento, String dataInicio, String dataFim) {
-        return compraRepository.findByNomeEstabelecimentoDataCompraValorTotal(nomeEstabelecimento, dataInicio, dataFim);
+    public List<CompraDTO> listarComprasPorEstabelecimentoEPeriodo(String nomeEstabelecimento, TipoCupom tipoCupom, String dataInicio, String dataFim) {
+        return compraRepository.findByNomeEstabelecimentoDataCompraValorTotal(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
     }
 
     public void excluirCompraPorId(Long id) {

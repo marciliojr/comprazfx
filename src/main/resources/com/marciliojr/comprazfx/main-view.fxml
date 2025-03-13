@@ -70,12 +70,15 @@
                             <Label text="Estabelecimento:"/>
                             <TextField fx:id="nomeEstabelecimentoPesquisaItens" maxWidth="Infinity"/>
 
+                            <Label text="Tipo de Cupom:"/>
+                            <ComboBox fx:id="tipoCupomComboItens" maxWidth="Infinity"/>
+
                             <Label text="Período da Compra:"/>
                             <HBox spacing="10.0">
                                 <Label text="Data Início:"/>
-                                <DatePicker fx:id="dataInicio"/>
+                                <DatePicker fx:id="dataInicioItens"/>
                                 <Label text="Data Fim:"/>
-                                <DatePicker fx:id="dataFim"/>
+                                <DatePicker fx:id="dataFimItens"/>
                             </HBox>
 
                             <HBox spacing="10.0">
@@ -133,12 +136,15 @@
                             <Label text="Estabelecimento:"/>
                             <TextField fx:id="nomeEstabelecimentoPesquisaCupons" maxWidth="Infinity"/>
 
+                            <Label text="Tipo de Cupom:"/>
+                            <ComboBox fx:id="tipoCupomComboCupons" maxWidth="Infinity"/>
+
                             <Label text="Período da Compra:"/>
                             <HBox spacing="10.0">
                                 <Label text="Data Início:"/>
-                                <DatePicker fx:id="dataInicioCompras"/>
+                                <DatePicker fx:id="dataInicioCupons"/>
                                 <Label text="Data Fim:"/>
-                                <DatePicker fx:id="dataFimCompras"/>
+                                <DatePicker fx:id="dataFimCupons"/>
                             </HBox>
 
                             <Button mnemonicParsing="false" onAction="#pesquisarCompras" text="Pesquisar">
@@ -173,13 +179,15 @@
                             <children>
                                 <Label text="Produtos:"/>
                                 <TextField fx:id="nomeProdutoTextField" maxWidth="Infinity"/>
+                                <Label text="Tipo de Cupom:"/>
+                                <ComboBox fx:id="tipoCupomComboProdutos" maxWidth="Infinity"/>
                                 <Label text="Período da Compra:"/>
                                 <HBox spacing="10.0">
                                     <children>
                                         <Label text="Data Início:"/>
-                                        <DatePicker fx:id="dataInicioProduto"/>
+                                        <DatePicker fx:id="dataInicioProdutos"/>
                                         <Label text="Data Fim:"/>
-                                        <DatePicker fx:id="dataFimProduto"/>
+                                        <DatePicker fx:id="dataFimProdutos"/>
                                     </children>
                                 </HBox>
                                 <HBox spacing="10.0">

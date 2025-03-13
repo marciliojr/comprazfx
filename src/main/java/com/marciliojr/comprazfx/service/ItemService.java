@@ -2,6 +2,7 @@ package com.marciliojr.comprazfx.service;
 
 import com.marciliojr.comprazfx.infra.ItemNormalizer;
 import com.marciliojr.comprazfx.model.Item;
+import com.marciliojr.comprazfx.model.TipoCupom;
 import com.marciliojr.comprazfx.model.dto.ItemDTO;
 import com.marciliojr.comprazfx.repository.ItemRepository;
 import org.apache.logging.log4j.util.Strings;
@@ -27,24 +28,27 @@ public class ItemService {
     }
 
     public List<ItemDTO> listarTodos() {
-        return itemRepository.findAll().stream().map(item -> ItemDTO.construir(item.getNome(), item.getQuantidade(), item.getUnidade(), item.getValorTotal(), item.getValorUnitario(), item.getCompra().getDataCompra(), item.getCompra().getEstabelecimento().getNomeEstabelecimento())).collect(Collectors.toList());
+        return itemRepository.findAll().stream()
+                .map(item -> ItemDTO.construir(item.getNome(), item.getQuantidade(), item.getUnidade(),
+                        item.getValorTotal(), item.getValorUnitario(), item.getCompra().getDataCompra(),
+                        item.getCompra().getEstabelecimento().getNomeEstabelecimento()))
+                .collect(Collectors.toList());
     }
 
-    public List<ItemDTO> listarItensPorEstabelecimentoEPeriodo(String nomeEstabelecimento, String dataInicio, String dataFim) {
-
-        if (Objects.isNull(dataInicio) && Objects.isNull(dataFim) && Strings.isBlank(nomeEstabelecimento)) {
+    public List<ItemDTO> listarItensPorEstabelecimentoEPeriodo(String nomeEstabelecimento, TipoCupom tipoCupom, String dataInicio, String dataFim) {
+        if (Objects.isNull(dataInicio) && Objects.isNull(dataFim) && Strings.isBlank(nomeEstabelecimento) && tipoCupom == null) {
             return listarTodos();
         }
 
-        return itemRepository.findAllItemsByEstabelecimentoAndPeriodo(nomeEstabelecimento, dataInicio, dataFim);
+        return itemRepository.findAllItemsByEstabelecimentoAndPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
     }
 
-    public BigDecimal somarValorUnitarioPorEstabelecimentoEPeriodo(String nomeEstabelecimento, String dataInicio, String dataFim) {
-        return itemRepository.sumValorTotalByEstabelecimentoAndPeriodo(nomeEstabelecimento, dataInicio, dataFim);
+    public BigDecimal somarValorUnitarioPorEstabelecimentoEPeriodo(String nomeEstabelecimento, TipoCupom tipoCupom, String dataInicio, String dataFim) {
+        return itemRepository.sumValorTotalByEstabelecimentoAndPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
     }
 
-    public List<ItemDTO> listarItensPorNomeEPeriodo(String nome, String dataInicio, String dataFim) {
-        return itemRepository.findByNomeByPeriodo(nome, dataInicio, dataFim);
+    public List<ItemDTO> listarItensPorNomeEPeriodo(String nome, TipoCupom tipoCupom, String dataInicio, String dataFim) {
+        return itemRepository.findByNomeByPeriodo(nome, tipoCupom, dataInicio, dataFim);
     }
 
     public void deleteById(Long id) {
@@ -62,6 +66,4 @@ public class ItemService {
             itemRepository.save(item);
         }
     }
-
-
 }

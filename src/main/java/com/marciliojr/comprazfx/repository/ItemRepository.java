@@ -55,12 +55,23 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE (:nome IS NULL OR LOWER(i.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) " +
             "AND (:tipoCupom IS NULL OR e.tipoCupom = :tipoCupom) " +
             "AND (:dataInicio IS NULL OR DATE(c.dataCompra) >= DATE(:dataInicio)) " +
-            "AND (:dataFim IS NULL OR DATE(c.dataCompra) <= DATE(:dataFim))")
+            "AND (:dataFim IS NULL OR DATE(c.dataCompra) <= DATE(:dataFim))" +
+            "AND (:nomeEstabelecimento IS NULL OR LOWER(e.nomeEstabelecimento) LIKE LOWER(CONCAT('%', :nomeEstabelecimento, '%')))")
     List<ItemDTO> findByNomeByPeriodo(
             @Param("nome") String nome,
             @Param("tipoCupom") TipoCupom tipoCupom,
             @Param("dataInicio") String dataInicio,
-            @Param("dataFim") String dataFim);
+            @Param("dataFim") String dataFim,
+            @Param("nomeEstabelecimento") String nomeEstabelecimento);
+
+    @Query("SELECT new com.marciliojr.comprazfx.model.dto.ItemDTO(i.nome, i.quantidade, i.unidade, i.valorTotal, i.valorUnitario, i.compra.dataCompra, i.compra.estabelecimento.nomeEstabelecimento) " +
+            "FROM Item i " +
+            "WHERE (:nome IS NULL OR LOWER(i.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) " +
+            "AND (:tipoCupom IS NULL OR i.compra.estabelecimento.tipoCupom = :tipoCupom) " +
+            "AND (:dataInicio IS NULL OR i.compra.dataCompra >= :dataInicio) " +
+            "AND (:dataFim IS NULL OR i.compra.dataCompra <= :dataFim) " +
+            "ORDER BY i.compra.dataCompra DESC")
+    List<ItemDTO> findByNomeAndEstabelecimentoByPeriodo(@Param("nome") String nome, @Param("tipoCupom") TipoCupom tipoCupom, @Param("dataInicio") String dataInicio, @Param("dataFim") String dataFim);
 
     void deleteById(Long id);
 

@@ -71,7 +71,7 @@ public class ApplicationFX extends Application {
     @FXML
     private TextField nomeEstabelecimentoCadastro;
     @FXML
-    private TextField nomeEstabelecimentoPesquisaItens;
+    private TextField nomeEstabelecimentoPesquisaProdutos;
     @FXML
     private TextField nomeEstabelecimentoPesquisaCupons;
     @FXML
@@ -199,15 +199,13 @@ public class ApplicationFX extends Application {
 
     @FXML
     private void initialize() {
-        configuraTabelaAbaItens();
         configuraTabelaAbaCompras();
         configuraTabelaAbaProdutos();
-        tabelaItens.setItems(listaItens);
         tabelaCompras.setItems(listaCompras);
         tabelaProduto.setItems(listaProdutos);
         List<String> nomesEstabelecimentos = estabelecimentoService.listarTodos().stream().map(Estabelecimento::getNomeEstabelecimento).collect(Collectors.toList());
         TextFields.bindAutoCompletion(nomeEstabelecimentoCadastro, nomesEstabelecimentos);
-        TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaItens, nomesEstabelecimentos);
+        TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaProdutos, nomesEstabelecimentos);
         TextFields.bindAutoCompletion(nomeEstabelecimentoPesquisaCupons, nomesEstabelecimentos);
 
         // Configurar menu de contexto para tabela de compras
@@ -246,13 +244,7 @@ public class ApplicationFX extends Application {
 
         carregarListaCss();
         carregarComboTipoCupom();
-        tipoCupomComboItens.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
-        tipoCupomComboCupons.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
         tipoCupomComboProdutos.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
-
-        // Definir TODOS como valor padrão
-        tipoCupomComboItens.setValue(TipoCupom.TODOS);
-        tipoCupomComboCupons.setValue(TipoCupom.TODOS);
         tipoCupomComboProdutos.setValue(TipoCupom.TODOS);
     }
 
@@ -414,8 +406,8 @@ public class ApplicationFX extends Application {
     }
 
     private BigDecimal getSomatorio() {
-        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaItens);
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboItens);
+        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaProdutos);
+        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
         String dataInicioFormatada = parseDateToString(dataInicioItens);
         String dataFimFormatada = parseDateToString(dataFimItens);
         return itemService.somarValorUnitarioPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicioFormatada, dataFimFormatada);
@@ -439,12 +431,13 @@ public class ApplicationFX extends Application {
     @FXML
     public void pesquisarProdutos(ActionEvent event) {
         String nomeProduto = nomeProdutoTextField.getText();
+        String nomeEstabelecimento = nomeEstabelecimentoPesquisaProdutos.getText();
         TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
         String dataInicio = dataInicioProdutos.getValue() != null ? dataInicioProdutos.getValue().toString() : null;
         String dataFim = dataFimProdutos.getValue() != null ? dataFimProdutos.getValue().toString() : null;
 
         listaProdutos.clear();
-        listaProdutos.addAll(itemService.listarItensPorNomeEPeriodo(nomeProduto, tipoCupom, dataInicio, dataFim));
+        listaProdutos.addAll(itemService.listarItensPorNomeEPeriodo(nomeProduto, tipoCupom, dataInicio, dataFim, nomeEstabelecimento));
     }
 
     @FXML
@@ -501,8 +494,8 @@ public class ApplicationFX extends Application {
     }
 
     private List<ItemDTO> getItensPorEstabelecimentoEPeriodo() {
-        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaItens);
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboItens);
+        String nomeEstabelecimento = getNome(nomeEstabelecimentoPesquisaProdutos);
+        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
         String dataInicioFormatada = parseDateToString(dataInicioItens);
         String dataFimFormatada = parseDateToString(dataFimItens);
         return itemService.listarItensPorEstabelecimentoEPeriodo(nomeEstabelecimento, tipoCupom, dataInicioFormatada, dataFimFormatada);
@@ -617,8 +610,8 @@ public class ApplicationFX extends Application {
 
     @FXML
     private void atualizarTotalItens() {
-        String nomeEstabelecimento = nomeEstabelecimentoPesquisaItens.getText();
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboItens);
+        String nomeEstabelecimento = nomeEstabelecimentoPesquisaProdutos.getText();
+        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
         String dataInicio = dataInicioItens.getValue() != null ? dataInicioItens.getValue().toString() : null;
         String dataFim = dataFimItens.getValue() != null ? dataFimItens.getValue().toString() : null;
 
@@ -628,8 +621,8 @@ public class ApplicationFX extends Application {
 
     @FXML
     private void pesquisarItens(ActionEvent event) {
-        String nomeEstabelecimento = nomeEstabelecimentoPesquisaItens.getText();
-        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboItens);
+        String nomeEstabelecimento = nomeEstabelecimentoPesquisaProdutos.getText();
+        TipoCupom tipoCupom = getTipoCupomSelecionado(tipoCupomComboProdutos);
         String dataInicio = dataInicioItens.getValue() != null ? dataInicioItens.getValue().toString() : null;
         String dataFim = dataFimItens.getValue() != null ? dataFimItens.getValue().toString() : null;
 

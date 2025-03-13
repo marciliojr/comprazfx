@@ -47,8 +47,8 @@ public class ItemService {
         return itemRepository.sumValorTotalByEstabelecimentoAndPeriodo(nomeEstabelecimento, tipoCupom, dataInicio, dataFim);
     }
 
-    public List<ItemDTO> listarItensPorNomeEPeriodo(String nome, TipoCupom tipoCupom, String dataInicio, String dataFim) {
-        return itemRepository.findByNomeByPeriodo(nome, tipoCupom, dataInicio, dataFim);
+    public List<ItemDTO> listarItensPorNomeEPeriodo(String nome, TipoCupom tipoCupom, String dataInicio, String dataFim, String nomeEstabelecimento) {
+        return itemRepository.findByNomeByPeriodo(nome, tipoCupom, dataInicio, dataFim, nomeEstabelecimento);
     }
 
     public void deleteById(Long id) {
@@ -62,13 +62,13 @@ public class ItemService {
     public void atualizarItem(ItemDTO itemDTO) {
         Item item = itemRepository.findById(itemDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
-        
+
         item.setNome(itemDTO.getNome());
         item.setQuantidade(itemDTO.getQuantidade());
         item.setUnidade(itemDTO.getUnidade());
         item.setValorUnitario(itemDTO.getValorUnitario());
         item.setValorTotal(itemDTO.getValorTotal());
-        
+
         itemRepository.save(item);
     }
 

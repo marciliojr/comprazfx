@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum TipoCupom {
+    TODOS(0, "Todos"),
     MERCADO(1, "Mercado"),
     LOJA(2, "Loja"),
     FARMACIA(3, "Farmácia"),

@@ -26,6 +26,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -214,15 +215,20 @@ public class ApplicationFX extends Application {
         if (cssSelecionado == null || cssSelecionado.isEmpty()) {
             return;
         }
-        Scene cenaAtual = comboBoxCss.getScene();
-        if (cenaAtual == null) {
-            return;
-        }
-        if (currentUserCSS != null) {
-            cenaAtual.getStylesheets().remove(currentUserCSS);
-        }
         String novoCSS = getClass().getResource("/css/" + cssSelecionado).toExternalForm();
-        cenaAtual.getStylesheets().add(novoCSS);
+        
+        // Aplicar o CSS a todas as cenas abertas
+        for (Window window : Window.getWindows()) {
+            if (window instanceof Stage) {
+                Scene cenaAtual = ((Stage) window).getScene();
+                if (cenaAtual != null) {
+                    if (currentUserCSS != null) {
+                        cenaAtual.getStylesheets().remove(currentUserCSS);
+                    }
+                    cenaAtual.getStylesheets().add(novoCSS);
+                }
+            }
+        }
         currentUserCSS = novoCSS;
         atualizarPropriedade("estilo", cssSelecionado);
     }

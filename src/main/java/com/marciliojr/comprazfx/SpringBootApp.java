@@ -13,5 +13,6 @@ public class SpringBootApp {
         DatabaseInitializer.init();
         context = SpringApplication.run(SpringBootApp.class, args);
         ApplicationFX.launch(ApplicationFX.class, args);
+
     }
 }

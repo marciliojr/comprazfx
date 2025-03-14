@@ -15,13 +15,10 @@ public class PDFExtractor {
         }
 
         try (PDDocument document = PDDocument.load(pdfFile)) {
-            // Inicializa o objeto para extração de texto
             PDFTextStripper pdfStripper = new PDFTextStripper();
 
-            // Extrai o texto do documento
             String text = pdfStripper.getText(document);
 
-            // Retorna o texto extraído
             return text;
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo PDF: " + e.getMessage());

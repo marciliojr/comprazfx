@@ -3,6 +3,7 @@ package com.marciliojr.comprazfx.service;
 import com.marciliojr.comprazfx.model.Compra;
 import com.marciliojr.comprazfx.model.Estabelecimento;
 import com.marciliojr.comprazfx.model.Item;
+import com.marciliojr.comprazfx.model.TipoCupom;
 import com.marciliojr.comprazfx.repository.CompraRepository;
 import com.marciliojr.comprazfx.repository.EstabelecimentoRepository;
 import org.slf4j.Logger;
@@ -18,15 +19,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.isNull;
 
 @Service
-public class PDFDataService {
+public class PDFDadosService {
     private static final String ITEM_REGEX = "(.*?)\\s*\\(Código:\\s*\\d+\\)\\s*Qtde\\.:\\s*(\\d+[,.]?\\d*)\\s*UN:\\s*(\\w+)\\s*Vl\\. Unit\\.:\\s*(\\d+[,.]?\\d+)\\s*Vl\\. Total\\s*(\\d+[,.]?\\d+)";
-    private static final Logger logger = LoggerFactory.getLogger(PDFDataService.class);
+    private static final Logger logger = LoggerFactory.getLogger(PDFDadosService.class);
     private static final Pattern ITEM_PATTERN = Pattern.compile(ITEM_REGEX);
 
     @Autowired
@@ -34,10 +36,10 @@ public class PDFDataService {
     @Autowired
     private EstabelecimentoRepository estabelecimentoRepository;
 
-    public void processarDadosEPersistir(String textoPDF, String nomeEstabelecimento, LocalDate dataCadastro) {
+    public void processarDadosEPersistir(String textoPDF, String nomeEstabelecimento, LocalDate dataCadastro, TipoCupom tipoCupom) {
         validarEntradas(textoPDF, nomeEstabelecimento);
 
-        Estabelecimento estabelecimento = salvarEstabelecimento(nomeEstabelecimento);
+        Estabelecimento estabelecimento = salvarEstabelecimento(nomeEstabelecimento, tipoCupom);
         Compra compra = criarCompra(estabelecimento, dataCadastro);
         List<Item> itens = extrairItensDoTexto(textoPDF, compra);
 
@@ -57,9 +59,10 @@ public class PDFDataService {
         }
     }
 
-    private Estabelecimento salvarEstabelecimento(String nome) {
+    private Estabelecimento salvarEstabelecimento(String nome, TipoCupom tipoCupom) {
         return estabelecimentoRepository.findByNomeEstabelecimento(nome).orElseGet(() -> {
             Estabelecimento novoEstabelecimento = new Estabelecimento();
+            novoEstabelecimento.setTipoCupom(Objects.requireNonNullElse(tipoCupom, TipoCupom.OUTROS));
             novoEstabelecimento.setNomeEstabelecimento(nome);
             return estabelecimentoRepository.save(novoEstabelecimento);
         });

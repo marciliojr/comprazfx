@@ -1,0 +1,139 @@
+.root {
+    -fx-base: #EAE9D5;
+    -fx-background: linear-gradient(to bottom, #F4F2ED 0%, #EAE9D5 100%);
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 12px;
+}
+
+.glass-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.4);
+    -fx-background-insets: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.button {
+    -fx-background-color:
+        linear-gradient(to bottom, #EDFBE9 0%, #CDECC8 45%, #B8E0B4 50%, #A2D59D 100%);
+    -fx-text-fill: #1A3D1A;
+    -fx-background-radius: 4px;
+    -fx-border-color: #7FA87E;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px 15px;
+    -fx-effect: innershadow(three-pass-box, rgba(255,255,255,0.75), 2, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF 0%, #E4F9E1 45%, #C7EDC4 100%);
+    -fx-border-color: #74A376;
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #B8E0B4 0%, #A2D59D 100%);
+    -fx-padding: 6px 14px 4px 16px;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.text-field, .password-field, .text-area {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-border-color: #B0A880;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(176,168,128,0.1), 5, 0, 0, 1);
+}
+
+.text-field:focused {
+    -fx-border-color: #B0A880;
+    -fx-effect: dropshadow(gaussian, rgba(176,168,128,0.2), 10, 0, 0, 0);
+}
+
+.table-view {
+    -fx-border-color: #B0A880;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-border-radius: 3px;
+    -fx-background-insets: 0;
+}
+
+.table-view .column-header {
+    -fx-background-color:
+        linear-gradient(to bottom, #c7edc4 0%, #c7edc4 100%);
+    -fx-border-color: #c7edc4;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #effcd7;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #B0A880;
+    -fx-text-fill: #556B2F;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: linear-gradient(to bottom, #B0A880 0%, #B0A880 100%);
+    -fx-background-insets: 2;
+    -fx-background-radius: 4px;
+    -fx-border-color: #B0A880;
+    -fx-border-width: 0.5px;
+}
+
+.menu-bar {
+    -fx-background-color: linear-gradient(to bottom, #B0A880 0%, #B0A880 100%);
+    -fx-border-color: #B0A880;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-item {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+}
+
+.menu-item:focused {
+    -fx-background-color: #B0A880;
+    -fx-text-fill: #556B2F;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-border-color: #B0A880;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark, .radio-button:selected .dot {
+    -fx-background-color: #3A8100;
+}
+
+.aero-reflex {
+    -fx-background-color: linear-gradient(to bottom,
+        rgba(255,255,255,0.4) 0%,
+        rgba(255,255,255,0.2) 20%,
+        rgba(255,255,255,0.0) 100%);
+}
+
+.title-bar {
+    -fx-background-color: linear-gradient(to bottom, #556B2F 0%, #556B2F 100%);
+    -fx-padding: 4px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 1);
+}
+
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}

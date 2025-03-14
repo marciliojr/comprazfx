@@ -498,6 +498,7 @@ public class ApplicationFX extends Application {
 
     @FXML
     private void abrirTelaEdicao(ItemDTO item) {
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("editar-item.fxml"));
 
@@ -514,7 +515,11 @@ public class ApplicationFX extends Application {
 
             Stage stage = new Stage();
             stage.setTitle("Editar Item");
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            String cssArquivo = lerPropriedade("estilo", "compraz.css");
+            currentUserCSS = getClass().getResource("/css/" + cssArquivo).toExternalForm();
+            scene.getStylesheets().add(currentUserCSS);
+            stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro ao abrir tela de edição: " + e.getMessage());
@@ -541,6 +546,7 @@ public class ApplicationFX extends Application {
     }
 
     private void visualizarCupom(CompraDTO compra) {
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("visualizar-cupom.fxml"));
             Parent root = loader.load();
@@ -550,7 +556,11 @@ public class ApplicationFX extends Application {
             
             Stage stage = new Stage();
             stage.setTitle("Visualizar Cupom - " + compra.getNomeEstabelecimento());
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            String cssArquivo = lerPropriedade("estilo", "compraz.css");
+            currentUserCSS = getClass().getResource("/css/" + cssArquivo).toExternalForm();
+            scene.getStylesheets().add(currentUserCSS);
+            stage.setScene(scene);
             controller.setStage(stage);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();

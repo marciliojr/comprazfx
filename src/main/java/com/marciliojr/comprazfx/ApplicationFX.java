@@ -22,12 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -199,14 +194,23 @@ public class ApplicationFX extends Application {
 
         carregarListaCss();
         carregarComboTipoCupom();
+        carregarComboTipoCupons();
+        carregarComboTipoProdutos();
+    }
+
+    private void carregarComboTipoProdutos() {
         tipoCupomComboProdutos.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
         tipoCupomComboProdutos.setValue(TipoCupom.TODOS);
     }
 
     private void carregarComboTipoCupom() {
-        comboTipoCupom.getItems().clear();
-        comboTipoCupom.getItems().addAll(Arrays.asList(TipoCupom.values()));
+        comboTipoCupom.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
         comboTipoCupom.setValue(TipoCupom.TODOS);
+    }
+
+    private void carregarComboTipoCupons() {
+        tipoCupomComboCupons.setItems(FXCollections.observableArrayList(Arrays.asList(TipoCupom.values())));
+        tipoCupomComboCupons.setValue(TipoCupom.TODOS);
     }
 
     @FXML
@@ -216,11 +220,11 @@ public class ApplicationFX extends Application {
             return;
         }
         String novoCSS = getClass().getResource("/css/" + cssSelecionado).toExternalForm();
-        
+
         // Aplicar o CSS a todas as cenas abertas
         for (Window window : Window.getWindows()) {
             if (window instanceof Stage) {
-                Scene cenaAtual = ((Stage) window).getScene();
+                Scene cenaAtual = window.getScene();
                 if (cenaAtual != null) {
                     if (currentUserCSS != null) {
                         cenaAtual.getStylesheets().remove(currentUserCSS);
@@ -550,10 +554,10 @@ public class ApplicationFX extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("visualizar-cupom.fxml"));
             Parent root = loader.load();
-            
+
             VisualizarCupomController controller = loader.getController();
             controller.setCompra(compra);
-            
+
             Stage stage = new Stage();
             stage.setTitle("Visualizar Cupom - " + compra.getNomeEstabelecimento());
             Scene scene = new Scene(root);
